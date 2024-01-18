@@ -1,0 +1,9 @@
+# Project place file
+/grid-pack.rbxlx
+
+# Roblox Studio lock files
+/*.rbxlx.lock
+/*.rbxl.lock
+
+# Wally
+Packages
