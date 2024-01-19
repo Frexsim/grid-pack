@@ -56,13 +56,13 @@ Here is an example showing an item being created and added to the grid we just c
 
 local item = GridPack.createItem({
     Position = Vector2.new(0, 0), -- Position in a grid.
-	Size = Vector.new(2, 3), -- Size in a grid.
+    Size = Vector.new(2, 3), -- Size in a grid.
 
-	Assets = {
-		Item = nil, -- Add a custom GuiObject here to change the item's gui element.
-	},
+    Assets = {
+        Item = nil, -- Add a custom GuiObject here to change the item's gui element.
+    },
 	
-	Metadata = {
+    Metadata = {
         -- Here you are free to store any values you want.
     },
 })
