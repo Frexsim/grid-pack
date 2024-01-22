@@ -35,7 +35,7 @@ function InventoryManager:Init()
 		local storageInventory = self:CreateNewInventory(storage)
 		storageInventory.Items[1] = {
 			Position = Vector2.zero,
-			Size = Vector2.new(2, 2),
+			Size = Vector2.new(2, 5),
 		}
 		
 		local openProximityPrompt = Instance.new("ProximityPrompt")

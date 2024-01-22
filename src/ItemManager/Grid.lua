@@ -118,9 +118,14 @@ function Grid:GetAbsoluteSizeFromItemSize(itemSize: Vector2): Vector2
 	return Vector2.new(math.round(sizeScale.X), math.round(sizeScale.Y)) * itemSize
 end
 
-function Grid:GetItemManagerPositionFromAbsolutePosition(absolutePosition: Vector2, itemSize: Vector2): Vector2
+function Grid:GetItemManagerPositionFromAbsolutePosition(absolutePosition: Vector2, itemSize: Vector2, itemRotation: number): Vector2
 	local itemManagerOffset = self.GuiElement.AbsolutePosition
 	local sizeScale = self:GetSizeScale()
+
+	if itemRotation % 2 == 1 then
+		absolutePosition = Vector2.new(absolutePosition.Y, absolutePosition.X)
+	end
+
 	local gridPosX = math.floor((absolutePosition.X - itemManagerOffset.X) / sizeScale.X + 0.5)
 	local gridPosY = math.floor((absolutePosition.Y - itemManagerOffset.Y) / sizeScale.Y + 0.5)
 

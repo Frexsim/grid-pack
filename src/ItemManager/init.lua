@@ -73,7 +73,7 @@ function ItemManager:GetAbsoluteSizeFromItemSize(_): Vector2
 	return Vector2.zero
 end
 
-function ItemManager:GetItemManagerPositionFromAbsolutePosition(_, _): Vector2
+function ItemManager:GetItemManagerPositionFromAbsolutePosition(_, _, _): Vector2
 	return Vector2.zero
 end
 

@@ -32,6 +32,7 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 	self.Position = properties.Position or Vector2.new(0, 0)
 	self.PositionChanged = Signal.new()
 	self.Size = properties.Size or Vector2.new(2, 2)
+	self.Rotation = properties.Rotation or 0
 	
 	self.ItemElement = self:_generateItemElement()
 	
@@ -46,6 +47,8 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 	self.IsDraggable = true
 	self.IsDragging = false
 	self.MouseDraggingPivot = Vector2.zero
+
+	self.RotateKeyCode = Enum.KeyCode.R
 	
 	self.Metadata = properties.Metadata or {}
 	
@@ -94,7 +97,7 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 	local interactionButton = self.ItemElement:FindFirstChild("InteractionButton")
 	assert(interactionButton, "Couldn't find a button named \"InteractionButton\" in the ItemElement")
 	
-	local highlight = nil
+	self._highlight = nil
 	self._trove:Add(interactionButton.MouseButton1Down:Connect(function()
 		-- Check if item is in an ItemManager, if there is then start dragging
 		if self.ItemManager ~= nil and self.IsDraggable then
@@ -112,10 +115,18 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 			
 			TweenService:Create(self.ItemElement, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {GroupTransparency = 0.5}):Play()
 			self.ItemElement.ZIndex += 1
+
+			self._draggingTrove:Add(UserInputService.InputBegan:Connect(function(input: InputObject, gameProcessedEvent: boolean)
+				if gameProcessedEvent == false then
+					if input.KeyCode == self.RotateKeyCode then
+						self:Rotate(1)
+					end
+				end
+			end))
 			
 			-- Create drop highlight
 			local gridPos = self.ItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size)
-			highlight = self._draggingTrove:Add(self.ItemManager:CreateHighlight(100, gridPos, self.Size, Color3.new(1, 1, 1)))
+			self._highlight = self._draggingTrove:Add(self.ItemManager:CreateHighlight(100, gridPos, self.Size, Color3.new(1, 1, 1)))
 		end
 	end))
 	
@@ -129,7 +140,7 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 					if itemManagerToTransferTo ~= nil and self.HoveringItemManager ~= itemManagerToTransferTo then
 						self.HoveringItemManager = itemManagerToTransferTo
 						self.HoveringItemManagerChanged:Fire(self.HoveringItemManager)
-						highlight:SetItemManager(100, self.HoveringItemManager)
+						self._highlight:SetItemManager(100, self.HoveringItemManager)
 						self:_updateItemToItemManagerDimentions(false, true, false, true, self.HoveringItemManager)
 
 						break
@@ -143,13 +154,13 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 				self:_updateDraggingPosition()
 				
 				local gridPos = currentItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size)
-				highlight.Position = gridPos
+				self._highlight.Position = gridPos
 				
 				local isColliding = currentItemManager:IsColliding(self, { self }, gridPos)
 				if isColliding == true then
-					highlight.Color = Color3.new(1, 0, 0)
+					self._highlight.Color = Color3.new(1, 0, 0)
 				else
-					highlight.Color = Color3.new(1, 1, 1)
+					self._highlight.Color = Color3.new(1, 1, 1)
 				end
 			end
 		end
@@ -288,7 +299,21 @@ function Item:_updateItemToItemManagerDimentions(applyPosition: boolean?, applyS
 	end
 end
 
-function Item:SetItemManager(itemManager)
+function Item:Rotate(quartersOf360: number)
+	self.Rotation += quartersOf360
+
+	if self._highlight then
+		if self.Rotation % 2 == 1 then
+			self._highlight.Size = Vector2.new(self.Size.Y, self.Size.X)
+		else
+			self._highlight.Size = self.Size
+		end
+	end
+
+	TweenService:Create(self.ItemElement, TweenInfo.new(0.25, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Rotation = self.Rotation * 90}):Play()
+end
+
+function Item:SetItemManager(itemManager: Types.ItemManagerObject)
 	if self.ItemManager ~= nil then
 		self.ItemManager:RemoveItem(self)
 	end
