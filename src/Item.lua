@@ -125,8 +125,13 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 			end))
 			
 			-- Create drop highlight
-			local gridPos = self.ItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size)
-			self._highlight = self._draggingTrove:Add(self.ItemManager:CreateHighlight(100, gridPos, self.Size, Color3.new(1, 1, 1)))
+			local highlightSize = self.Size
+			if self.Rotation % 2 == 1 then
+				highlightSize = Vector2.new(self.Size.Y, self.Size.X)
+			end
+
+			local gridPos = self.ItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size, self.Rotation)
+			self._highlight = self._draggingTrove:Add(self.ItemManager:CreateHighlight(100, gridPos, highlightSize, Color3.new(1, 1, 1)))
 		end
 	end))
 	
@@ -152,8 +157,8 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 			local currentItemManager = self.HoveringItemManager or self.ItemManager
 			if currentItemManager then
 				self:_updateDraggingPosition()
-				
-				local gridPos = currentItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size)
+
+				local gridPos = currentItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size, self.Rotation)
 				self._highlight.Position = gridPos
 				
 				local isColliding = currentItemManager:IsColliding(self, { self }, gridPos)
@@ -173,7 +178,7 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 			
 			-- Check if the item is colliding, if not add the item to the itemManager
 			local currentItemManager = self.HoveringItemManager or self.ItemManager
-			local gridPos = currentItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size)
+			local gridPos = currentItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size, self.Rotation)
 			local isColliding = currentItemManager:IsColliding(self, { self }, gridPos)
 			if isColliding == false then
 				-- Get new ItemManager, is nil if no new ItemManager is found
@@ -278,9 +283,14 @@ function Item:_updateItemToItemManagerDimentions(applyPosition: boolean?, applyS
 	local selectedItemManager = itemManager or self.ItemManager
 	
 	if applyPosition then
+		local rotationOffset = Vector2.zero
+		if self.Rotation % 2 == 1 then
+			rotationOffset = Vector2.new(self.Size.Y / 2 - self.Size.X / 2, self.Size.X / 2 - self.Size.Y / 2)
+		end
+
 		local itemManagerOffset = selectedItemManager:GetOffset()
 		local sizeScale = selectedItemManager:GetSizeScale()
-		local elementPosition = UDim2.fromOffset(self.Position.X * sizeScale.X + itemManagerOffset.X, self.Position.Y * sizeScale.Y + itemManagerOffset.Y)
+		local elementPosition = UDim2.fromOffset((self.Position.X + rotationOffset.X)  * sizeScale.X + itemManagerOffset.X, (self.Position.Y + rotationOffset.Y)  * sizeScale.Y + itemManagerOffset.Y)
 		if usePositionTween then
 			TweenService:Create(self.ItemElement, TweenInfo.new(0.25, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Position = elementPosition}):Play()
 		else
