@@ -33,6 +33,7 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 	self.PositionChanged = Signal.new()
 	self.Size = properties.Size or Vector2.new(2, 2)
 	self.Rotation = properties.Rotation or 0
+	self.PotentialRotation = self.Rotation
 	
 	self.ItemElement = self:_generateItemElement()
 	
@@ -110,9 +111,6 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 			local itemEnd = itemStart + self.ItemElement.AbsoluteSize
 			self.MouseDraggingPivot = (mousePosition - itemStart) / (itemEnd - itemStart)
 			
-			-- Update positioning
-			self:_updateDraggingPosition()
-			
 			TweenService:Create(self.ItemElement, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {GroupTransparency = 0.5}):Play()
 			self.ItemElement.ZIndex += 1
 
@@ -126,12 +124,15 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 			
 			-- Create drop highlight
 			local highlightSize = self.Size
-			if self.Rotation % 2 == 1 then
+			if self.PotentialRotation % 2 == 1 then
 				highlightSize = Vector2.new(self.Size.Y, self.Size.X)
 			end
 
-			local gridPos = self.ItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size, self.Rotation)
+			local gridPos = self.ItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size, self.PotentialRotation)
 			self._highlight = self._draggingTrove:Add(self.ItemManager:CreateHighlight(100, gridPos, highlightSize, Color3.new(1, 1, 1)))
+
+			-- Update positioning
+			self:_updateDraggingPosition()
 		end
 	end))
 	
@@ -157,69 +158,62 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 			local currentItemManager = self.HoveringItemManager or self.ItemManager
 			if currentItemManager then
 				self:_updateDraggingPosition()
-
-				local gridPos = currentItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size, self.Rotation)
-				self._highlight.Position = gridPos
-				
-				local isColliding = currentItemManager:IsColliding(self, { self }, gridPos)
-				if isColliding == true then
-					self._highlight.Color = Color3.new(1, 0, 0)
-				else
-					self._highlight.Color = Color3.new(1, 1, 1)
-				end
 			end
 		end
 	end))
-	
+
 	self._trove:Add(UserInputService.InputEnded:Connect(function(input)
 		-- Drop item when left mouse stops getting clicked
-		if input.UserInputType == Enum.UserInputType.MouseButton1 and self.IsDragging == true and self.ItemManager ~= nil then	
+		if input.UserInputType == Enum.UserInputType.MouseButton1 and self.IsDragging == true and self.ItemManager ~= nil then
 			self.IsDragging = false
-			
+
 			-- Check if the item is colliding, if not add the item to the itemManager
 			local currentItemManager = self.HoveringItemManager or self.ItemManager
-			local gridPos = currentItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size, self.Rotation)
-			local isColliding = currentItemManager:IsColliding(self, { self }, gridPos)
+			local gridPos = currentItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size, self.PotentialRotation)
+			local isColliding = currentItemManager:IsColliding(self, { self }, gridPos, self.PotentialRotation)
 			if isColliding == false then
 				-- Get new ItemManager, is nil if no new ItemManager is found
 				local newItemManager = nil
 				if self.HoveringItemManager and self.HoveringItemManager ~= self.ItemManager then
 					newItemManager = self.HoveringItemManager
 				end
-				
+
 				-- Check for middleware and if it allows item move
 				local middlewareReturn = nil
 				if self.MoveMiddleware then
 					middlewareReturn = self.MoveMiddleware(self, gridPos, self.ItemManager, newItemManager)
 				end
-				
+
 				if middlewareReturn == true or middlewareReturn == nil then
 					-- Move item
 					self.Position = gridPos
 					self.PositionChanged:Fire(gridPos)
-					
+					self.Rotation = self.PotentialRotation
+
 					-- Switch ItemManager if the item was hovering above one
 					if newItemManager then
 						self:SetItemManager(self.HoveringItemManager)
 					end
 				end
 			end
-			
+
+			self.PotentialRotation = self.Rotation
+
 			self.HoveringItemManager = nil
 			self.HoveringItemManagerChanged:Fire(self.HoveringItemManager)
-			
+
 			-- Update item positioning to current itemManager
 			self:_updateItemToItemManagerDimentions(true, true, true, true)
-			
+
 			TweenService:Create(self.ItemElement, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {GroupTransparency = 0}):Play()
 			self.ItemElement.ZIndex -= 1
-			
+
 			self._draggingTrove:Clean()
-			
+
 			self.IsDraggable = true
 		end
 	end))
-	
+
 	if self.RenderMiddleware then
 		self.RenderMiddleware(self.ItemElement)
 	end
@@ -277,6 +271,17 @@ end
 function Item:_updateDraggingPosition()
 	local mousePosition = UserInputService:GetMouseLocation() - guiInset
 	self.ItemElement.Position = UDim2.fromOffset(mousePosition.X - self.MouseDraggingPivot.X * self.ItemElement.AbsoluteSize.X, mousePosition.Y - self.MouseDraggingPivot.Y * self.ItemElement.AbsoluteSize.Y)
+
+	local currentItemManager = self.HoveringItemManager or self.ItemManager
+	local gridPos = currentItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size, self.PotentialRotation)
+	self._highlight.Position = gridPos
+
+	local isColliding = currentItemManager:IsColliding(self, { self }, gridPos, self.PotentialRotation)
+	if isColliding == true then
+		self._highlight.Color = Color3.new(1, 0, 0)
+	else
+		self._highlight.Color = Color3.new(1, 1, 1)
+	end
 end
 
 function Item:_updateItemToItemManagerDimentions(applyPosition: boolean?, applySize: boolean?, usePositionTween: boolean?, useSizeTween: boolean?, itemManager: Types.ItemManagerObject?)	
@@ -292,9 +297,10 @@ function Item:_updateItemToItemManagerDimentions(applyPosition: boolean?, applyS
 		local sizeScale = selectedItemManager:GetSizeScale()
 		local elementPosition = UDim2.fromOffset((self.Position.X + rotationOffset.X)  * sizeScale.X + itemManagerOffset.X, (self.Position.Y + rotationOffset.Y)  * sizeScale.Y + itemManagerOffset.Y)
 		if usePositionTween then
-			TweenService:Create(self.ItemElement, TweenInfo.new(0.25, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Position = elementPosition}):Play()
+			TweenService:Create(self.ItemElement, TweenInfo.new(0.25, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Position = elementPosition, Rotation = self.Rotation * 90}):Play()
 		else
 			self.ItemElement.Position = elementPosition
+			self.ItemElement.Rotation = self.Rotation * 90
 		end
 	end
 	
@@ -310,17 +316,29 @@ function Item:_updateItemToItemManagerDimentions(applyPosition: boolean?, applyS
 end
 
 function Item:Rotate(quartersOf360: number)
-	self.Rotation += quartersOf360
+	assert(self.IsDragging, "Must be dragging to rotate an item!")
+
+	self.PotentialRotation += quartersOf360
+	if self.PotentialRotation > 4 then
+		self.PotentialRotation -= 4
+	elseif self.PotentialRotation < 0 then
+		self.PotentialRotation += 4
+	end
+	self.ItemElement.Rotation = 0
 
 	if self._highlight then
-		if self.Rotation % 2 == 1 then
+		local currentItemManager = self.HoveringItemManager or self.ItemManager
+		local gridPos = currentItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size, self.PotentialRotation)
+		self._highlight.Position = gridPos
+
+		if self.PotentialRotation % 2 == 1 then
 			self._highlight.Size = Vector2.new(self.Size.Y, self.Size.X)
 		else
 			self._highlight.Size = self.Size
 		end
 	end
 
-	TweenService:Create(self.ItemElement, TweenInfo.new(0.25, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Rotation = self.Rotation * 90}):Play()
+	TweenService:Create(self.ItemElement, TweenInfo.new(0.25, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Rotation = self.PotentialRotation * 90}):Play()
 end
 
 function Item:SetItemManager(itemManager: Types.ItemManagerObject)

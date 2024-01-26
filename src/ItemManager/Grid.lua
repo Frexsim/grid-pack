@@ -122,20 +122,14 @@ function Grid:GetItemManagerPositionFromAbsolutePosition(absolutePosition: Vecto
 	local itemManagerOffset = self.GuiElement.AbsolutePosition
 	local sizeScale = self:GetSizeScale()
 
-	local itemOffset = Vector2.new(-0.5, 0.5)
-	if itemRotation % 2 == 1 then
-		itemSize = Vector2.new(itemSize.Y, itemSize.X)
-		itemOffset = itemSize / 2 + Vector2.new(-1.5, 1)
-	end
-
 	local rotationOffset = Vector2.zero
 	if itemRotation % 2 == 1 then
 		rotationOffset = Vector2.new(itemSize.Y, itemSize.X) / 2 - itemSize / 2
+		itemSize = Vector2.new(itemSize.Y, itemSize.X)
 	end
 
-
-	local gridPosX = math.floor((absolutePosition.X - itemManagerOffset.X) / sizeScale.X + rotationOffset.X + 0.5)
-	local gridPosY = math.floor((absolutePosition.Y - itemManagerOffset.Y) / sizeScale.Y + rotationOffset.Y + 0.5)
+	local gridPosX = math.floor((absolutePosition.X - itemManagerOffset.X) / sizeScale.X - rotationOffset.X + 0.5)
+	local gridPosY = math.floor((absolutePosition.Y - itemManagerOffset.Y) / sizeScale.Y - rotationOffset.Y + 0.5)
 
 	gridPosX = math.clamp(gridPosX, 0, self.GridSize.X - itemSize.X)
 	gridPosY = math.clamp(gridPosY, 0, self.GridSize.Y - itemSize.Y)
@@ -147,7 +141,7 @@ function Grid:GetNextFreePositionForItem(item: Types.ItemObject): Vector2?
 	for gridY = 0, self.GridSize.Y - 1 do
 		for gridX = 0, self.GridSize.X - 1 do
 			local currentPosition = Vector2.new(gridX, gridY)
-			local insideBounds = self:IsRegionInBounds(currentPosition, item.Size)
+			local insideBounds = self:IsRegionInBounds(currentPosition, item.Size, item.Rotation)
 			local collidingItems = self:GetItemsInRegion(currentPosition, item.Size, { item })
 			if #collidingItems == 0 and insideBounds then
 				return currentPosition
@@ -158,14 +152,22 @@ function Grid:GetNextFreePositionForItem(item: Types.ItemObject): Vector2?
 	return nil
 end
 
-function Grid:GetItemsInRegion(position: Vector2, size: Vector2, ignoredItems: { Types.ItemObject }): { Types.ItemObject }
+function Grid:GetItemsInRegion(position: Vector2, size: Vector2, rotation: number, ignoredItems: { Types.ItemObject }): { Types.ItemObject }
 	local regionEnd = position + size
+	if rotation % 2 == 1 then
+		regionEnd = position + Vector2.new(size.Y, size.X)
+	end
 
 	local collidingItems = {}
 	for _, item in ipairs(self.Items) do
 		if table.find(ignoredItems, item) == nil then
 			local itemStart = item.Position
-			local itemEnd = itemStart + item.Size
+			local itemSize = item.Size
+			if item.Rotation % 2 == 1 then
+				itemSize = Vector2.new(item.Size.Y, item.Size.X)
+			end
+			
+			local itemEnd = itemStart + itemSize
 
 			local xOverlapping = (position.X < itemEnd.X) and (regionEnd.X > itemStart.X)
 			local yOverlapping = (position.Y < itemEnd.Y) and (regionEnd.Y > itemStart.Y)
@@ -178,15 +180,18 @@ function Grid:GetItemsInRegion(position: Vector2, size: Vector2, ignoredItems: {
 	return collidingItems
 end
 
-function Grid:IsColliding(item: Types.ItemObject, ignoredItems: { Types.ItemObject }, at: Vector2?): boolean
-	local collidingItems = self:GetItemsInRegion(at or item.Position, item.Size, ignoredItems)
+function Grid:IsColliding(item: Types.ItemObject, ignoredItems: { Types.ItemObject }, at: Vector2?, withRotation: number?): boolean
+	local collidingItems = self:GetItemsInRegion(at or item.Position, item.Size, withRotation or item.Rotation, ignoredItems)
 	return #collidingItems > 0
 end
 
-function Grid:IsRegionInBounds(position: Vector2, size: Vector2): boolean
+function Grid:IsRegionInBounds(position: Vector2, size: Vector2, rotation: number): boolean
 	local regionEnd = position + size
+	if rotation % 2 == 1 then
+		regionEnd = position + Vector2.new(size.Y, size.X)
+	end
 
-	local isNotInBoundsX = position.X < 0 or regionEnd.X > self.GridSize.X 
+	local isNotInBoundsX = position.X < 0 or regionEnd.X > self.GridSize.X
 	local isNotInBoundsY = position.Y < 0 or regionEnd.Y > self.GridSize.Y
 	if isNotInBoundsX or isNotInBoundsY then
 		return false
@@ -220,7 +225,7 @@ function Grid:AddItem(item: Types.ItemObject, at: Vector2?, useTween: boolean?)
 	local itemPosition = at or item.Position
 	assert(item.ItemManager == nil, "Could not add item: Item is already in another ItemManager")
 	assert(self:IsColliding(item, { item }, itemPosition) == false, "Could not add item: Item is colliding with an already added item")
-	assert(self:IsRegionInBounds(itemPosition, item.Size) == true, "Could not add item: Item is out of the grid's bounds")
+	assert(self:IsRegionInBounds(itemPosition, item.Size, item.Rotation) == true, "Could not add item: Item is out of the grid's bounds")
 	
 	item.Position = itemPosition
 	table.insert(self.Items, item)
