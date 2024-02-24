@@ -140,9 +140,9 @@ Here's and example of how client to server communication would work:
 
 ```lua
 local item = GridPack.createItem({
-	-- Other Item properties
-	
-	MoveMiddleware = function(movedItem, newGridPosition, lastItemManager, newItemManager)
+    -- Other Item properties
+
+    MoveMiddleware = function(movedItem, newGridPosition, lastItemManager, newItemManager)
         --[[
             movedItem: This Item
             newGridPosition: This Item's new position in a Grid. (Doesn't apply with SingleSlots)
@@ -150,21 +150,21 @@ local item = GridPack.createItem({
             newItemManager: The new ItemManager the item was moved to. (If there is one)
         ]]
 
-		if newItemManager then
+        if newItemManager then
             -- Ask server to validate the Item movement between ItemManagers and return the result to the Item
-			return ReplicatedStorage.Remotes.MoveItemAcrossItemManager:InvokeServer()
-		else
+            return ReplicatedStorage.Remotes.MoveItemAcrossItemManager:InvokeServer()
+        else
             -- Ask server to validate the Item movement between positions and return the result to the Item
-			return ReplicatedStorage.Remotes.MoveItem:InvokeServer()
-		end
+            return ReplicatedStorage.Remotes.MoveItem:InvokeServer()
+        end
 
         -- If the result if false then the Item will move back to it's last position.
-	end,
+    end,
 
     Metadata = {
         -- Tip: Here you can any values you need for MoveMiddleware!
     }
-	
-	-- Other Item properties
+
+    -- Other Item properties
 })
 ```
