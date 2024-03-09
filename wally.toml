@@ -1,7 +1,7 @@
 [package]
 name = "ifrexsim/grid-pack"
 description = "An easy way to create grid-type inventories."
-version = "0.1.0"
+version = "0.1.1"
 license = "MIT"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
