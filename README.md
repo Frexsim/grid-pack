@@ -20,6 +20,7 @@ local GridPack = require(game:GetService("ReplicatedStorage").Packages.GridPack)
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "GridPack"
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling -- ZIndexBehavior has to be set to Sibling since CanvasGroups don't work with Global and GridPack heavily relies on CanvasGroups.
 screenGui.ResetOnSpawn = false
 screenGui.Parent = game:GetService("Players").LocalPlayer.PlayerGui
 
@@ -99,7 +100,7 @@ transferGrid:ConnectTransferLink(transferLink) -- Connect the TransferLink to ou
 
 You will now be able to drag an item over to the other inventory and it should adjust to the new inventory.
 
-## Single Slots
+### Single Slots
 With SingleSlots you are able to drag any item into it, disreguarding the size and position of the item. This can be used as an equip slot where you have your primary weapon, tool or armor stored.
 
 The SingleSlot setup is a little different than the Grid setup.
@@ -110,6 +111,7 @@ local GridPack = require(game:GetService("ReplicatedStorage").Packages.GridPack)
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "GridPack"
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.ResetOnSpawn = false
 screenGui.Parent = game:GetService("Players").LocalPlayer.PlayerGui
 
