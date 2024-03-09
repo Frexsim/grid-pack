@@ -15,10 +15,7 @@ local Grid = setmetatable({}, ItemManager)
 Grid.__index = Grid
 
 function Grid.new(properties: Types.GridProperties): Types.GridObject
-	local self = setmetatable(ItemManager.new({
-		Assets = properties.Assets,
-		Metadata = properties.Metadata,
-	}), Grid)
+	local self = setmetatable(ItemManager.new(properties), Grid)
 	self.GuiElement, self.SlotElements = self:_createGuiElement(properties)
 	
 	self.GridSize = properties.GridSize

@@ -17,10 +17,7 @@ SingleSlot.__index = SingleSlot
 
 -- Create a new SingleSlot object
 function SingleSlot.new(properties: Types.SingleSlotProperties): Types.SingleSlotObject
-	local self = setmetatable(ItemManager.new({
-		Assets = properties.Assets,
-		Metadata = properties.Metadata,
-	}), SingleSlot)
+	local self = setmetatable(ItemManager.new(properties), SingleSlot)
 	self.GuiElement = self:_createGuiElement(properties)
 	
 	self.Item = nil
