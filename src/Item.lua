@@ -17,7 +17,85 @@ local Types = require(script.Parent.Types)
 local Item = {}
 Item.__index = Item
 
--- Create a new Item object
+--[=[
+	@class Item
+]=]
+--[=[
+	@prop Position Vector2
+	The position of the Item in a grid ItemManager.
+
+	@within Item
+]=]
+--[=[
+	@prop PositionChanged RBXScriptSignal
+	@readonly
+	@tag Signal
+	An event signal that fires every time the Item has it's position changed.
+
+	@within Item
+]=]
+--[=[
+	@prop Size Vector2
+	The size of the Item in a grid ItemManager.
+
+	@within Item
+]=]
+--[=[
+	@prop Rotation number
+	@readonly
+	The current rotation of the item. Use `Item:Rotate()` to edit.
+
+	@within Item
+]=]
+--[=[
+	@prop PotentialRotation number
+	@readonly
+	The rotation that will be applied if a successful move goes through.
+
+	@within Item
+]=]
+--[=[
+	@prop ItemManager ItemManagerObject?
+	@readonly
+	The current ItemManger that the Item is in.
+
+	@within Item
+]=]
+--[=[
+	@prop ItemManagerChanged RBXScriptSignal
+	@readonly
+	@tag Signal
+	An event signal that fires every time the Item is moved in a new ItemManager.
+
+	@within Item
+]=]
+--[=[
+	@prop HoveringItemManager ItemManagerObject?
+	@readonly
+	The ItemManager that the Item is hovering over. ItemManagers need to be linked via TranferLinks to register as a hoverable ItemManager.
+
+	@within Item
+]=]
+--[=[
+	@prop HoveringItemManagerChanged RBXScriptSignal
+	@readonly
+	@tag Signal
+	An event signal that fires every time the Item is hovering over a new ItemManager.
+
+	@within Item
+]=]
+--[=[
+	@prop MoveMiddleware ((movedItem: Item, newGridPosition: Vector2, lastItemManager: ItemManager, newItemManager: ItemManager) -> boolean)?
+	A callback function where you can do additional move checks. The Item will be automatically moved back if the callback function returns false.
+
+	@within Item
+]=]
+
+--[=[
+	Creates a new Item object.
+
+	@within Item
+]=]
 function Item.new(properties: Types.ItemProperties): Types.ItemObject
 	local self = setmetatable({}, Item)
 	self._trove = Trove.new()
@@ -221,7 +299,13 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 	return self
 end
 
-function Item:_createDefaultItemAsset()
+--[=[
+	@private
+	Used to create the default Item GUI asset if the user hasn't specified one.
+
+	@within Item
+]=]
+function Item:_createDefaultItemAsset(): CanvasGroup
     local itemElement = Instance.new("CanvasGroup")
 	itemElement.Name = "ItemElement"
 	itemElement.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -231,7 +315,7 @@ function Item:_createDefaultItemAsset()
 
 	local image = Instance.new("ImageLabel")
 	image.Name = "Image"
-	image.Image = "rbxassetid://14499638701"
+	image.Image = ""
 	image.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	image.BackgroundTransparency = 1
 	image.BorderSizePixel = 0
@@ -259,6 +343,12 @@ function Item:_createDefaultItemAsset()
 	return itemElement
 end
 
+--[=[
+	@private
+	Clones the specified Item GUI asset in the `Item.Assets.Item` property.
+
+	@within Item
+]=]
 function Item:_generateItemElement()
 	local newItem = self._trove:Add(self.Assets.Item:Clone())
 	if self.ItemManager then
@@ -268,6 +358,12 @@ function Item:_generateItemElement()
 	return newItem
 end
 
+--[=[
+	@private
+	Updates the Item's GUI element position to align with the mouse position.
+
+	@within Item
+]=]
 function Item:_updateDraggingPosition()
 	local mousePosition = UserInputService:GetMouseLocation() - guiInset
 	self.ItemElement.Position = UDim2.fromOffset(mousePosition.X - self.MouseDraggingPivot.X * self.ItemElement.AbsoluteSize.X, mousePosition.Y - self.MouseDraggingPivot.Y * self.ItemElement.AbsoluteSize.Y)
@@ -284,6 +380,12 @@ function Item:_updateDraggingPosition()
 	end
 end
 
+--[=[
+	@private
+	Updates the Item's GUI element size and position to align with the new ItemManager.
+
+	@within Item
+]=]
 function Item:_updateItemToItemManagerDimentions(applyPosition: boolean?, applySize: boolean?, usePositionTween: boolean?, useSizeTween: boolean?, itemManager: Types.ItemManagerObject?)	
 	local selectedItemManager = itemManager or self.ItemManager
 	
@@ -315,6 +417,11 @@ function Item:_updateItemToItemManagerDimentions(applyPosition: boolean?, applyS
 	end
 end
 
+--[=[
+	Rotates the item.
+
+	@within Item
+]=]
 function Item:Rotate(quartersOf360: number)
 	assert(self.IsDragging, "Must be dragging to rotate an item!")
 
@@ -342,6 +449,11 @@ function Item:Rotate(quartersOf360: number)
 	TweenService:Create(self.ItemElement, TweenInfo.new(0.25, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Rotation = self.PotentialRotation * 90}):Play()
 end
 
+--[=[
+	Moves an item to a new ItemManager. This should only be used for transferring Items between ItemManagers that aren't linked using TranferLinks.
+
+	@within Item
+]=]
 function Item:SetItemManager(itemManager: Types.ItemManagerObject)
 	if self.ItemManager ~= nil then
 		self.ItemManager:RemoveItem(self)
@@ -354,6 +466,11 @@ function Item:SetItemManager(itemManager: Types.ItemManagerObject)
 	end
 end
 
+--[=[
+	Destroy the Item object.
+
+	@within Item
+]=]
 function Item:Destroy()
 	self._trove:Destroy()
 end

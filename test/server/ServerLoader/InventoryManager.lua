@@ -35,7 +35,7 @@ function InventoryManager:Init()
 		local storageInventory = self:CreateNewInventory(storage)
 		storageInventory.Items[1] = {
 			Position = Vector2.zero,
-			Size = Vector2.new(3, 4),
+			Size = Vector2.new(2, 3),
 			Rotation = 0,
 		}
 		storageInventory.Items[2] = {

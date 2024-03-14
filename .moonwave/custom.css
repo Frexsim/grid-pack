@@ -1,0 +1,209 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
+
+:root {
+    --ifm-font-family-base: Inter, -apple-system, "Helvetica Neue", Roboto,
+    Helvetica, system-ui, "Nimbus Sans", "Arial Nova", Arial, Segoe UI;
+
+    --ifm-color-primary: #ff931c;
+    --ifm-color-primary-dark: #ff8600;
+    --ifm-color-primary-darker: #f17e00;
+    --ifm-color-primary-darkest: #c66800;
+    --ifm-color-primary-light: #ffa038;
+    --ifm-color-primary-lighter: #ffa746;
+    --ifm-color-primary-lightest: #ffbb71;
+
+    --ifm-toc-padding-horizontal: 16px;
+
+    --ifm-navbar-search-input-icon: url('data:image/svg+xml;utf8,<svg fill="gray" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" height="16px" width="16px"><path d="M6.02945,10.20327a4.17382,4.17382,0,1,1,4.17382-4.17382A4.15609,4.15609,0,0,1,6.02945,10.20327Zm9.69195,4.2199L10.8989,9.59979A5.88021,5.88021,0,0,0,12.058,6.02856,6.00467,6.00467,0,1,0,9.59979,10.8989l4.82338,4.82338a.89729.89729,0,0,0,1.29912,0,.89749.89749,0,0,0-.00087-1.29909Z" /></svg>') !important;
+}
+
+.sourceButtonText_node_modules-docusaurus-plugin-moonwave-src-components-styles-module {
+    border: 0 !important;
+}
+
+.badge_node_modules-docusaurus-plugin-moonwave-src-components-styles-module {
+    color: white !important;
+    background-color: black;
+
+    border-radius: 4px;
+
+    margin: 0 !important;
+    margin-right: 10px !important;
+
+    padding-left: 2px;
+    padding-right: 6px;
+
+    height: 28px;
+}
+.badge_node_modules-docusaurus-plugin-moonwave-src-components-styles-module[style="color: rgb(155, 89, 182);"] {
+    background-color: rgb(155, 89, 182);
+}
+.badge_node_modules-docusaurus-plugin-moonwave-src-components-styles-module[style="color: rgb(231, 76, 60);"] {
+    background-color: rgb(231, 76, 60);
+}
+
+.badgeToolTipTail_node_modules-docusaurus-plugin-moonwave-src-components-styles-module {
+    font-size: 0.8rem;
+    
+    padding-top: 5px;
+    bottom: 3px;
+}
+.badgeToolTipTail_node_modules-docusaurus-plugin-moonwave-src-components-styles-module > svg {
+    opacity: 0%;
+    height: 0 !important;
+    width: 0 !important;
+}
+
+.docTag_node_modules-docusaurus-plugin-moonwave-src-components-styles-module {
+    color: white !important;
+    background-color: gray;
+
+    border: 0 !important;
+    border-radius: 4px;
+
+    font-size: 0.8rem;
+    
+    padding: 0 !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+
+    margin: 0 !important;
+    margin-right: 10px !important;
+    
+    height: 28px;
+    line-height: 28px;
+
+    bottom: 4px;
+}
+.docTag_node_modules-docusaurus-plugin-moonwave-src-components-styles-module::before {
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+}
+.docTag_node_modules-docusaurus-plugin-moonwave-src-components-styles-module::after {
+    opacity: 0 !important;
+    height: 0 !important;
+    width: 0 !important;
+}
+
+.anchor {
+    display: inline-flex !important;
+
+    margin-right: -4px !important;
+
+    position: relative;
+    right: 24px;
+}
+.anchor > .hash-link {
+    order: -1;
+
+    padding-left: 0;
+    padding-right: 0.35rem;
+}
+
+.green_node_modules-docusaurus-plugin-moonwave-src-components-styles-module {
+    color: var(--ifm-color-primary) !important;
+}
+
+.menu {
+    padding: 0.5rem !important;
+}
+
+.memberString_node_modules-docusaurus-plugin-moonwave-src-components-styles-module {
+    background-color: var(--ifm-hover-overlay);
+    border: 1px var(--docusaurus-collapse-button-bg-hover) solid;
+    border-radius: 5px;
+
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+
+    margin-bottom: 1rem !important;
+
+    font-size: 1rem !important;
+}
+
+.footer--dark {
+    --ifm-footer-background-color: var(--ifm-background-surface-color) !important;
+}
+
+.footer__copyright {
+    color: var(--ifm-navbar-link-color);
+}
+
+.table-of-contents__link {
+    color: var(--ifm-scrollbar-thumb-hover-background-color);
+    padding-top: 6px;
+    padding-bottom: 6px;
+
+    line-height: 110%;
+}
+
+.table-of-contents__link--active {
+    color: var(--ifm-color-primary-contrast-foreground);
+}
+
+.table-of-contents li {
+    margin: 0;
+}
+
+.navbar__search-input {
+    background-color: var(--ifm-hover-overlay);
+}
+
+.navbar__search-input::placeholder {
+    color: var(--ifm-menu-color);
+}
+
+details > summary {
+    background-color: var(--docusaurus-collapse-button-bg-hover);
+    padding: 8px;
+    border-radius: 5px;
+}
+
+details[open=""] > summary {
+    border-radius: 0;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+}
+
+details > pre {
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    background-color: var(--ifm-hover-overlay);
+    border: 1px var(--docusaurus-collapse-button-bg-hover) solid;
+}
+
+.docSidebarContainer_node_modules-docusaurus-plugin-moonwave-src-components-styles-module {
+    margin-right: 16px;
+}
+
+img {
+    position: relative;
+
+    border-radius: 16px;
+    box-shadow: rgba(0, 0, 0, 15%) 0px 0px 10px 10px;
+    border: var(--ifm-scrollbar-track-background-color) 2px solid;
+
+    transition: 0.25s;
+    transition-property: border-radius, border-color, scale, transform;
+
+    max-height: 256px;
+
+    margin-bottom: 1em;
+
+    z-index: 100;
+}
+
+img:hover {
+    border-radius: 4px;
+    border-color: var(--ifm-color-primary);
+
+    scale: 150%;
+    transform: translate(17%, 0%);
+}
+
+p > a {
+    color: var(--ifm-scrollbar-thumb-hover-background-color);
+    text-decoration: var(--ifm-link-hover-decoration);
+}

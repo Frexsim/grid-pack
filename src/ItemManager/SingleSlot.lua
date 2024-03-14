@@ -14,8 +14,37 @@ local Types = require(script.Parent.Parent.Types)
 local SingleSlot = setmetatable({}, ItemManager)
 SingleSlot.__index = SingleSlot
 
+--[=[
+	@class SingleSlot
+]=]
+--[=[
+	@prop GuiElement GuiObject
+	@readonly
+	The SingleSlot's GUI element.
 
--- Create a new SingleSlot object
+	@within SingleSlot
+]=]
+--[=[
+	@prop Item ItemObject
+	@readonly
+	The current Item in the SingleSlot.
+
+	@within SingleSlot
+]=]
+--[=[
+	@prop ItemChanged RBXScriptSignal
+	@readonly
+	@tag Signal
+	An event signal that fires every time a new Item replaces the old Item.
+
+	@within SingleSlot
+]=]
+
+--[=[
+	Creates a new SingleSlot ItemManager object.
+
+	@within SingleSlot
+]=]
 function SingleSlot.new(properties: Types.SingleSlotProperties): Types.SingleSlotObject
 	local self = setmetatable(ItemManager.new({
 		Assets = properties.Assets,
@@ -37,6 +66,12 @@ function SingleSlot.new(properties: Types.SingleSlotProperties): Types.SingleSlo
 	return self
 end
 
+--[=[
+	@private
+	Creates a new SingleSlot GUI element.
+
+	@within SingleSlot
+]=]
 function SingleSlot:_createGuiElement(properties: Types.SingleSlotProperties): { GuiObject }
 	local container = self._trove:Add(self.Assets.Slot:Clone())
 	container.Name = "SingleSlot"
@@ -52,15 +87,33 @@ function SingleSlot:_createGuiElement(properties: Types.SingleSlotProperties): {
 	return container
 end
 
+--[=[
+	Gets the AbsoluteSize of the slot.
+
+	@tag ItemManager Override
+	@within SingleSlot
+]=]
 function SingleSlot:GetSizeScale(): Vector2
 	return self.GuiElement.AbsoluteSize
 end
 
-function SingleSlot:GetAbsoluteSizeFromItemSize(_): Vector2
+--[=[
+	Gets the AbsoluteSize of an Item with the ItemManager's size scale.
+
+	@tag ItemManager Override
+	@within SingleSlot
+]=]
+function SingleSlot:GetAbsoluteSizeFromItemSize(itemSize: Vector2): Vector2
 	return self.GuiElement.AbsoluteSize
 end
 
-function SingleSlot:IsColliding(_, ignoredItems: { [number]: Types.ItemObject }, _): boolean
+--[=[
+	Checks if an Item is colliding. Use the `at` parameter to override the collision check position, else it will use the Item's position.
+
+	@tag ItemManager Override
+	@within SingleSlot
+]=]
+function SingleSlot:IsColliding(item: Types.ItemObject, ignoredItems: { Types.ItemObject }, at: Vector2?): boolean
 	if table.find(ignoredItems, self.Item) then
 		return false
 	end
@@ -68,7 +121,13 @@ function SingleSlot:IsColliding(_, ignoredItems: { [number]: Types.ItemObject },
 	return self.Item ~= nil
 end
 
-function SingleSlot:ChangeItem(item)
+--[=[
+	Changes the current item in the SingleSlot.
+
+	@tag ItemManager Override
+	@within SingleSlot
+]=]
+function SingleSlot:ChangeItem(item: Types.ItemObject)
 	assert(item.ItemManager == nil, "Could not add item: Item is already in another ItemManager")
 	
 	if self.Item then
@@ -81,6 +140,12 @@ function SingleSlot:ChangeItem(item)
 	item.ItemManagerChanged:Fire(self, true)
 end
 
+--[=[
+	Removes the item from the SingleSlot.
+
+	@tag ItemManager Override
+	@within SingleSlot
+]=]
 function SingleSlot:RemoveItem()
 	if self.Item then
 		self.Item.ItemManagerChanged:Fire(nil)

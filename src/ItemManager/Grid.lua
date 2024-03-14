@@ -14,11 +14,58 @@ local Types = require(script.Parent.Parent.Types)
 local Grid = setmetatable({}, ItemManager)
 Grid.__index = Grid
 
+--[=[
+	@class Grid
+]=]
+--[=[
+	@prop GuiElement GuiObject
+	@readonly
+	@within Grid
+]=]
+--[=[
+	@prop SlotElements { GuiObject }
+	@readonly
+	@within Grid
+]=]
+--[=[
+	@prop GridSize Vector2
+	@readonly
+	@within Grid
+]=]
+--[=[
+	@prop SlotAspectRatio number
+	@readonly
+	@within Grid
+]=]
+--[=[
+	@prop Items { ItemObject }
+	@readonly
+	@within Grid
+]=]
+--[=[
+	@prop ItemAdded RBXScriptSignal
+	@readonly
+	@tag Signal
+	An event signal that fires every time a new Item is added to the Grid.
+
+	@within Grid
+]=]
+--[=[
+	@prop ItemRemovec RBXScriptSignal
+	@readonly
+	@tag Signal
+	An event signal that fires every time an Item is removed from the Grid.
+
+	@within Grid
+]=]
+
+--[=[
+	Create a new Grid ItemManager object.
+
+	@within Grid
+]=]
 function Grid.new(properties: Types.GridProperties): Types.GridObject
-	local self = setmetatable(ItemManager.new({
-		Assets = properties.Assets,
-		Metadata = properties.Metadata,
-	}), Grid)
+	local self = setmetatable(ItemManager.new(properties), Grid)
 	self.GuiElement, self.SlotElements = self:_createGuiElement(properties)
 	
 	self.GridSize = properties.GridSize
@@ -48,7 +95,13 @@ function Grid.new(properties: Types.GridProperties): Types.GridObject
 	return self
 end
 
-function Grid:_createGuiElement(properties: Types.GridProperties): (GuiObject, { GuiObject })
+--[=[
+	@private
+	Creates a new Grid GUI element.
+
+	@within Grid
+]=]
+function Grid:_createGuiElement(properties: Types.GridProperties): (CanvasGroup, { CanvasGroup })
 	local slots = {}
 
 	local container = self._trove:Add(Instance.new("CanvasGroup"))
@@ -87,6 +140,12 @@ function Grid:_createGuiElement(properties: Types.GridProperties): (GuiObject, {
 	return container, slots
 end
 
+--[=[
+	@private
+	Updates all slot GUI elements in the grid.
+
+	@within Grid
+]=]
 function Grid:_updateGuiGrid()
 	self.GuiElement.UIGridLayout.CellSize = UDim2.fromScale(1 / self.GridSize.X, 1 / self.GridSize.Y)
 	
@@ -108,16 +167,34 @@ function Grid:_updateGuiGrid()
 	end
 end
 
+--[=[
+	Gets the AbsoluteSize of one slot.
+
+	@tag ItemManager Override
+	@within Grid
+]=]
 function Grid:GetSizeScale(): Vector2
 	return self.GuiElement.UIGridLayout.AbsoluteCellSize
 end
 
+--[=[
+	Gets the AbsoluteSize of an Item with the ItemManager's size scale.
+
+	@tag ItemManager Override
+	@within Grid
+]=]
 function Grid:GetAbsoluteSizeFromItemSize(itemSize: Vector2): Vector2
 	local sizeScale = self:GetSizeScale()
 	
 	return Vector2.new(math.round(sizeScale.X), math.round(sizeScale.Y)) * itemSize
 end
 
+--[=[
+	Converts an AbsolutePosition to a ItemManager position.
+
+	@tag ItemManager Override
+	@within Grid
+]=]
 function Grid:GetItemManagerPositionFromAbsolutePosition(absolutePosition: Vector2, itemSize: Vector2, itemRotation: number): Vector2
 	local itemManagerOffset = self.GuiElement.AbsolutePosition
 	local sizeScale = self:GetSizeScale()
@@ -137,6 +214,11 @@ function Grid:GetItemManagerPositionFromAbsolutePosition(absolutePosition: Vecto
 	return Vector2.new(gridPosX, gridPosY)
 end
 
+--[=[
+	Gets the next position in a Grid where the item doesn't collide with anything.
+
+	@within Grid
+]=]
 function Grid:GetNextFreePositionForItem(item: Types.ItemObject): Vector2?
 	for gridY = 0, self.GridSize.Y - 1 do
 		for gridX = 0, self.GridSize.X - 1 do
@@ -152,6 +234,11 @@ function Grid:GetNextFreePositionForItem(item: Types.ItemObject): Vector2?
 	return nil
 end
 
+--[=[
+	Gets all of the Items in the secified region.
+
+	@within Grid
+]=]
 function Grid:GetItemsInRegion(position: Vector2, size: Vector2, rotation: number, ignoredItems: { Types.ItemObject }): { Types.ItemObject }
 	local regionEnd = position + size
 	if rotation % 2 == 1 then
@@ -180,11 +267,22 @@ function Grid:GetItemsInRegion(position: Vector2, size: Vector2, rotation: numbe
 	return collidingItems
 end
 
+--[=[
+	Checks if an Item is colliding. Use the `at` parameter to override the collision check position, else it will use the Item's position.
+
+	@tag ItemManager Override
+	@within Grid
+]=]
 function Grid:IsColliding(item: Types.ItemObject, ignoredItems: { Types.ItemObject }, at: Vector2?, withRotation: number?): boolean
 	local collidingItems = self:GetItemsInRegion(at or item.Position, item.Size, withRotation or item.Rotation, ignoredItems)
 	return #collidingItems > 0
 end
 
+--[=[
+	Checks if a region is in the bounds of the Grid.
+
+	@within Grid
+]=]
 function Grid:IsRegionInBounds(position: Vector2, size: Vector2, rotation: number): boolean
 	local regionEnd = position + size
 	if rotation % 2 == 1 then
@@ -200,6 +298,11 @@ function Grid:IsRegionInBounds(position: Vector2, size: Vector2, rotation: numbe
 	end
 end
 
+--[=[
+	Sorts all of the items by volume (Volume = Size.X * Size.Y).
+
+	@within Grid
+]=]
 function Grid:SortItemsByVolume()
 	local itemsSortedByVolume = table.clone(self.Items)
 	table.sort(itemsSortedByVolume, function(a, b)
@@ -221,6 +324,11 @@ function Grid:SortItemsByVolume()
 	end
 end
 
+--[=[
+	Adds an item to the grid. Use optional `at` parameter for overriding the Item's position.
+
+	@within Grid
+]=]
 function Grid:AddItem(item: Types.ItemObject, at: Vector2?, useTween: boolean?)
 	local itemPosition = at or item.Position
 	assert(item.ItemManager == nil, "Could not add item: Item is already in another ItemManager")
@@ -234,6 +342,12 @@ function Grid:AddItem(item: Types.ItemObject, at: Vector2?, useTween: boolean?)
 	item.ItemManagerChanged:Fire(self, useTween)
 end
 
+--[=[
+	Removes an item from the Grid.
+
+	@tag ItemManager Override
+	@within Grid
+]=]
 function Grid:RemoveItem(item: Types.ItemObject)
 	local foundItemIndex = table.find(self.Items, item)
 	if foundItemIndex then
@@ -246,6 +360,11 @@ function Grid:RemoveItem(item: Types.ItemObject)
 	end
 end
 
+--[=[
+	Removes all of the Items in the grid.
+
+	@within Grid
+]=]
 function Grid:ClearItems()
 	for index, item in ipairs(self.Items) do
 		self.Items[index] = nil
