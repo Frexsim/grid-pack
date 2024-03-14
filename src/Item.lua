@@ -181,7 +181,7 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 				-- Check for middleware and if it allows item move
 				local middlewareReturn = nil
 				if self.MoveMiddleware then
-					middlewareReturn = self.MoveMiddleware(self, gridPos, self.ItemManager, newItemManager)
+					middlewareReturn = self.MoveMiddleware(self, gridPos, self.PotentialRotation, self.ItemManager, newItemManager)
 				end
 
 				if middlewareReturn == true or middlewareReturn == nil then
@@ -319,12 +319,13 @@ function Item:Rotate(quartersOf360: number)
 	assert(self.IsDragging, "Must be dragging to rotate an item!")
 
 	self.PotentialRotation += quartersOf360
-	if self.PotentialRotation > 4 then
+	if self.PotentialRotation > 3 then
+		self.ItemElement.Rotation = -90
 		self.PotentialRotation -= 4
 	elseif self.PotentialRotation < 0 then
+		self.ItemElement.Rotation = 360
 		self.PotentialRotation += 4
 	end
-	self.ItemElement.Rotation = 0
 
 	if self._highlight then
 		local currentItemManager = self.HoveringItemManager or self.ItemManager

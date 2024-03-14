@@ -84,14 +84,15 @@ function InventoryManager:LoadInventory(gridPackItemManager, inventory)
 		local newInteractiveItem = GridPack.createItem({
 			Position = item.Position,
 			Size = item.Size,
+			Rotation = item.Rotation,
 			
-			MoveMiddleware = function(movedItem, newGridPosition, lastItemManager, newItemManager)
+			MoveMiddleware = function(movedItem, newGridPosition, newRotation, lastItemManager, newItemManager)
 				if newItemManager then
-					local result, newItemIndex = ReplicatedStorage.Remotes.MoveItemAcrossItemManager:InvokeServer(movedItem.Metadata.ItemIndex, lastItemManager.Metadata.TiedInstance, newItemManager.Metadata.TiedInstance, newGridPosition)
+					local result, newItemIndex = ReplicatedStorage.Remotes.MoveItemAcrossItemManager:InvokeServer(movedItem.Metadata.ItemIndex, lastItemManager.Metadata.TiedInstance, newItemManager.Metadata.TiedInstance, newGridPosition, newRotation)
 					movedItem.Metadata.ItemIndex = newItemIndex
 					return result
 				else
-					return ReplicatedStorage.Remotes.MoveItem:InvokeServer(movedItem.Metadata.ItemIndex, lastItemManager.Metadata.TiedInstance, newGridPosition)
+					return ReplicatedStorage.Remotes.MoveItem:InvokeServer(movedItem.Metadata.ItemIndex, lastItemManager.Metadata.TiedInstance, newGridPosition, newRotation)
 				end
 			end,
 			

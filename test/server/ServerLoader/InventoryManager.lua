@@ -36,10 +36,12 @@ function InventoryManager:Init()
 		storageInventory.Items[1] = {
 			Position = Vector2.zero,
 			Size = Vector2.new(3, 4),
+			Rotation = 0,
 		}
 		storageInventory.Items[2] = {
-			Position = Vector2.new(0, 6),
+			Position = Vector2.new(0, 8),
 			Size = Vector2.new(2, 5),
+			Rotation = 1,
 		}
 		
 		local openProximityPrompt = Instance.new("ProximityPrompt")
@@ -54,7 +56,7 @@ function InventoryManager:Init()
 		openProximityPrompt.Parent = storage
 	end
 	
-	ReplicatedStorage.Remotes.MoveItemAcrossItemManager.OnServerInvoke = function(_, itemIndex, lastInventoryTiedInstance, newInventoryTiedInstance, newGridPosition)
+	ReplicatedStorage.Remotes.MoveItemAcrossItemManager.OnServerInvoke = function(_, itemIndex, lastInventoryTiedInstance, newInventoryTiedInstance, newGridPosition, newRotation)
 		local success, result, newIndexResult = pcall(function()
 			local lastInventory = self:GetInventoryFromTiedInstance(lastInventoryTiedInstance)
 			local newInventory = self:GetInventoryFromTiedInstance(newInventoryTiedInstance)
@@ -63,6 +65,7 @@ function InventoryManager:Init()
 			if item then
 				lastInventory.Items[itemIndex] = nil
 				item.Position = newGridPosition
+				item.Rotation = newRotation
 				local newInventoryItemAmount = 1
 				for _, _ in pairs(newInventory.Items) do
 					newInventoryItemAmount += 1
@@ -90,10 +93,11 @@ function InventoryManager:Init()
 		end
 	end
 	
-	ReplicatedStorage.Remotes.MoveItem.OnServerInvoke = function(_, itemIndex, inventoryTiedInstance, newGridPosition)
+	ReplicatedStorage.Remotes.MoveItem.OnServerInvoke = function(_, itemIndex, inventoryTiedInstance, newGridPosition, newRotation)
 		local success, result = pcall(function()
 			local inventory = self:GetInventoryFromTiedInstance(inventoryTiedInstance)
 			inventory.Items[itemIndex].Position = newGridPosition
+			inventory.Items[itemIndex].Rotation = newRotation
 			
 			return true
 		end)
