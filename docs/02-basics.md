@@ -37,7 +37,7 @@ local myFirstGrid = GridPack.createGrid({
 
 You should now have a Grid on your screen once you join the game!
 
-<img src="/grid-pack/assets/images/MyFirstGrid-8899b98e89630b5a4bae59027a326a17.png" />
+![](/MyFirstGrid.png)
 
 :::warning
 If the example above doesn't work for you, please check that the script is a LocalScript and is located in a client script compatible directory (StarterPlayer.StarterPlayerScripts is recommended!). If it still doesn't work, please make sure that the script is not a normal script with RunContext set to Client, and is instead a LocalScript!
@@ -69,4 +69,4 @@ myFirstGrid:AddItem(myFirstItem) -- Add the item to the Grid.
 
 The item should now be added to the grid and should also be draggable!
 
-<img src="/grid-pack/assets/images/MyFirstItem-60c8b99d88fd84491fd173df82aa4437.png" />
+![](/MyFirstItem.png)

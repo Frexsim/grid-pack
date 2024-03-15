@@ -26,4 +26,4 @@ transferGrid:ConnectTransferLink(transferLink) -- Connect the TransferLink to ou
 
 You will now be able to drag an item over to the other inventory and it should adjust to the new inventory.
 
-<img src="/grid-pack/assets/images/ItemTransfer-d9652885358cd4eaf80207c98ecc0d4d.gif" />
+![](/ItemTransfer.gif)

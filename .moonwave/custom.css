@@ -189,6 +189,7 @@ img {
     transition-property: border-radius, border-color, scale, transform;
 
     max-height: 256px;
+    width: auto;
 
     margin-bottom: 1em;
 
