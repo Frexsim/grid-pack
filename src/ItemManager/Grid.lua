@@ -365,8 +365,12 @@ end
 
 	@within Grid
 ]=]
-function Grid:ClearItems()
+function Grid:ClearItems(destroyItems: boolean?)
 	for index, item in ipairs(self.Items) do
+		if destroyItems then
+			item:Destroy()
+		end
+
 		self.Items[index] = nil
 		self.ItemRemoved:Fire(item)
 		

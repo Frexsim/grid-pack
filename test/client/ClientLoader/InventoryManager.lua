@@ -112,7 +112,7 @@ function InventoryManager:LoadInventory(gridPackItemManager, inventory)
 end
 
 function InventoryManager:ClearGridPackInventory(gridPackItemManager)
-	gridPackItemManager:ClearItems()
+	gridPackItemManager:ClearItems(true)
 end
 
 return InventoryManager
