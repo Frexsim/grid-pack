@@ -1,5 +1,5 @@
 [package]
-name = "ifrexsim/grid-pack"
+name = "frexsim/grid-pack"
 description = "An easy way to create grid-type inventories."
 version = "0.2.0"
 license = "MIT"
