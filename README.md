@@ -20,6 +20,7 @@ local GridPack = require(game:GetService("ReplicatedStorage").Packages.GridPack)
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "GridPack"
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling -- ZIndexBehavior has to be set to Sibling since CanvasGroups don't work with Global and GridPack heavily relies on CanvasGroups.
 screenGui.ResetOnSpawn = false
 screenGui.Parent = game:GetService("Players").LocalPlayer.PlayerGui
 
@@ -99,7 +100,7 @@ transferGrid:ConnectTransferLink(transferLink) -- Connect the TransferLink to ou
 
 You will now be able to drag an item over to the other inventory and it should adjust to the new inventory.
 
-## Single Slots
+### Single Slots
 With SingleSlots you are able to drag any item into it, disreguarding the size and position of the item. This can be used as an equip slot where you have your primary weapon, tool or armor stored.
 
 The SingleSlot setup is a little different than the Grid setup.
@@ -110,6 +111,7 @@ local GridPack = require(game:GetService("ReplicatedStorage").Packages.GridPack)
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "GridPack"
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.ResetOnSpawn = false
 screenGui.Parent = game:GetService("Players").LocalPlayer.PlayerGui
 
@@ -129,5 +131,42 @@ local singleSlot = GridPack.createSingleSlot({
     Metadata = {
         -- Here you are free to store any values you want.
     }
+})
+```
+
+## Item Communication with Server
+Since GridPack doesn't handle the serverside for you, items come with the `.MoveMiddleware` property which is run before the item actually gets moved on the client.
+And you can use this property to validate your item movements by return true or false is the movement is valid.
+Item collision is still checked before `.MoveMiddleware` but it's also good to check for collision on the server to prevent cheating or client desync.
+Here's and example of how client to server communication would work:
+
+```lua
+local item = GridPack.createItem({
+    -- Other Item properties
+
+    MoveMiddleware = function(movedItem, newGridPosition, lastItemManager, newItemManager)
+        --[[
+            movedItem: This Item
+            newGridPosition: This Item's new position in a Grid. (Doesn't apply with SingleSlots)
+            lastItemManager: The ItemManager that the Item was in before it got moved.
+            newItemManager: The new ItemManager the item was moved to. (If there is one)
+        ]]
+
+        if newItemManager then
+            -- Ask server to validate the Item movement between ItemManagers and return the result to the Item
+            return ReplicatedStorage.Remotes.MoveItemAcrossItemManager:InvokeServer()
+        else
+            -- Ask server to validate the Item movement between positions and return the result to the Item
+            return ReplicatedStorage.Remotes.MoveItem:InvokeServer()
+        end
+
+        -- If the result if false then the Item will move back to it's last position.
+    end,
+
+    Metadata = {
+        -- Tip: Here you can any values you need for MoveMiddleware!
+    }
+
+    -- Other Item properties
 })
 ```
