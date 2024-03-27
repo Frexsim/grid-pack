@@ -50,12 +50,16 @@ function DataStore:Init()
 			local parsedItem = {}
 
 			for itemValueKey, itemValue in pairs(item) do
-				if itemValue.X ~= nil and itemValue.Y ~= nil and itemValue.Z == nil then
-					parsedItem[itemValueKey] = Vector2.new(itemValue.X, itemValue.Y)
-				elseif itemValue.X ~= nil and itemValue.Y ~= nil and itemValue.Z ~= nil then
-					parsedItem[itemValueKey] = Vector3.new(itemValue.X, itemValue.Y, itemValue.Z)
-				elseif itemValue.R ~= nil and itemValue.G ~= nil and itemValue.B ~= nil then
-					parsedItem[itemValueKey] = Color3.new(itemValue.R, itemValue.G, itemValue.B)
+				if typeof(itemValue) == "table" then
+					if itemValue.X ~= nil and itemValue.Y ~= nil and itemValue.Z == nil then
+						parsedItem[itemValueKey] = Vector2.new(itemValue.X, itemValue.Y)
+					elseif itemValue.X ~= nil and itemValue.Y ~= nil and itemValue.Z ~= nil then
+						parsedItem[itemValueKey] = Vector3.new(itemValue.X, itemValue.Y, itemValue.Z)
+					elseif itemValue.R ~= nil and itemValue.G ~= nil and itemValue.B ~= nil then
+						parsedItem[itemValueKey] = Color3.new(itemValue.R, itemValue.G, itemValue.B)
+					end
+				else
+					parsedItem[itemValueKey] = itemValue
 				end
 			end
 
@@ -99,6 +103,8 @@ function DataStore:Init()
 							G = itemValue.G,
 							B = itemValue.B,
 						}
+					else
+						parsedItem[itemValueKey] = itemValue
 					end
 				end
 				

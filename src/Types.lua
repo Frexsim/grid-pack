@@ -6,6 +6,7 @@ local Signal = require(script.Parent.Parent.signal)
 export type ItemProperties = {
 	Position: Vector2?,
 	Size: Vector2?,
+	Rotation: number?,
 
 	Assets: {
 		Item: GuiObject,
@@ -19,6 +20,7 @@ export type ItemObject = {
 	Position: Vector2,
 	PositionChanged: Signal.Signal<Vector2>,
 	Size: Vector2,
+	Rotation: number,
 
 	Assets: {
 		Item: GuiObject,
@@ -33,6 +35,8 @@ export type ItemObject = {
 	
 	MoveMiddleware: ((item: ItemObject, newGridPosition: Vector2, lastItemManager: ItemManagerObject, newItemManager: ItemManagerObject?) -> boolean)?,
 	RenderMiddleware: ((GuiObject) -> nil)?,
+
+	Rotate: (quartersOf360: number) -> nil,
 	
 	Dragging: boolean,
 	MouseDraggingPivot: Vector2,
@@ -58,9 +62,10 @@ export type ItemManagerObject = {
 	TransferLinkConnected: Signal.Signal<TransferLinkObject>,
 	TransferLinkDisconnected: Signal.Signal<TransferLinkObject>,
 	
+	GetOffset: (itemRotation: number) -> Vector2,
 	GetSizeScale: () -> Vector2,
-	GetAbsoluteSizeFromItemSize: (itemSize: Vector2) -> Vector2,
-	GetItemManagerPositionFromAbsolutePosition: (absolutePosition: Vector2, itemSize: Vector2) -> Vector2,
+	GetAbsoluteSizeFromItemSize: (itemSize: Vector2, itemRotation: number) -> Vector2,
+	GetItemManagerPositionFromAbsolutePosition: (absolutePosition: Vector2, itemSize: Vector2, itemRotation: number) -> Vector2,
 	
 	IsColliding: (item: ItemObject, ignoredItems: { ItemObject }, at: Vector2?) -> boolean,
 	

@@ -12,7 +12,23 @@ local Types = require(script.Parent.Types)
 local TransferLink = {}
 TransferLink.__index = TransferLink
 
--- Create a new TransferLink object
+--[=[
+	@class TransferLink
+	Used to connect ItemManagers together so that Items are draggable between them.
+]=]
+--[=[
+	@prop ConnectedItemMangers { ItemManagerObject }
+	@readonly
+	All of the ItemManagers that the TranferLink has linked together. Should not be edited and only read from. To connect an ItemManager to a TransferLink use: `ItemManager:ConnectTransferLink(TransferLink)`
+
+	@within TransferLink
+]=]
+
+--[=[
+	Create a new TransferLink object.
+
+	@within TransferLink
+]=]
 function TransferLink.new(properties: Types.TransferLinkProperties): Types.TransferLinkObject
 	local self = setmetatable({}, TransferLink)
 	self.ConnectedItemManagers = properties.ConnectedItemManagers or {}
@@ -33,8 +49,12 @@ function TransferLink:RemoveItemManager(itemManager: Types.ItemManagerObject)
 	table.remove(self.ConnectedItemManagers, itemManagerIndex)
 end
 
--- Get a the first item-overlapping ItemManager
-function TransferLink:GetItemOverlappingItemManagers(item): { Types.ItemManagerObject }
+--[=[
+	Get the ItemManagers that the Item is hovering over.
+
+	@within TransferLink
+]=]
+function TransferLink:GetItemOverlappingItemManagers(item: Types.ItemObject): { Types.ItemManagerObject }
 	local itemStart = item.ItemElement.AbsolutePosition
 	local itemEnd = itemStart + item.ItemElement.AbsoluteSize
 
@@ -55,8 +75,12 @@ function TransferLink:GetItemOverlappingItemManagers(item): { Types.ItemManagerO
 	return overlappingItemManagers
 end
 
--- Same as TransferLink:GetItemOverlappingItemManagers() but takes distance into account
-function TransferLink:GetClosestItemOverlappingItemManagers(item): { Types.ItemManagerObject }
+--[=[
+	Same as `TransferLink:GetItemOverlappingItemManagers()` but sorts the ItemManagers by distance from nearest to furthest.
+
+	@within TransferLink
+]=]
+function TransferLink:GetClosestItemOverlappingItemManagers(item: Types.ItemObject): { Types.ItemManagerObject }
 	local overlappingItemManagers = self:GetItemOverlappingItemManagers(item)
 	local mousePosition = UserInputService:GetMouseLocation() - guiInset
 	

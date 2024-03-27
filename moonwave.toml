@@ -1,0 +1,10 @@
+title = "GridPack"
+gitSourceBranch = "main"
+
+[[classOrder]]
+section = "ItemManagers"
+classes = ["ItemManager", "Grid", "SingleSlot"]
+
+[home]
+enabled = true
+includeReadme = false
