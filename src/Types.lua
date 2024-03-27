@@ -63,8 +63,8 @@ export type ItemManagerObject = {
 	TransferLinkDisconnected: Signal.Signal<TransferLinkObject>,
 	
 	GetSizeScale: () -> Vector2,
-	GetAbsoluteSizeFromItemSize: (itemSize: Vector2) -> Vector2,
-	GetItemManagerPositionFromAbsolutePosition: (absolutePosition: Vector2, itemSize: Vector2) -> Vector2,
+	GetAbsoluteSizeFromItemSize: (itemSize: Vector2, itemRotation: number) -> Vector2,
+	GetItemManagerPositionFromAbsolutePosition: (absolutePosition: Vector2, itemSize: Vector2, itemRotation: number) -> Vector2,
 	
 	IsColliding: (item: ItemObject, ignoredItems: { ItemObject }, at: Vector2?) -> boolean,
 	

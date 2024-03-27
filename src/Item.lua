@@ -392,12 +392,12 @@ function Item:_updateItemToItemManagerDimentions(applyPosition: boolean?, applyS
 	if applyPosition then
 		local rotationOffset = Vector2.zero
 		if self.Rotation % 2 == 1 then
-			rotationOffset = Vector2.new(self.Size.Y / 2 - self.Size.X / 2, self.Size.X / 2 - self.Size.Y / 2)
+			rotationOffset = Vector2.new(self.Size.Y, self.Size.X) / 2 - self.Size / 2
 		end
 
-		local itemManagerOffset = selectedItemManager:GetOffset()
+		local itemManagerOffset = selectedItemManager:GetOffset(self.Rotation)
 		local sizeScale = selectedItemManager:GetSizeScale()
-		local elementPosition = UDim2.fromOffset((self.Position.X + rotationOffset.X)  * sizeScale.X + itemManagerOffset.X, (self.Position.Y + rotationOffset.Y)  * sizeScale.Y + itemManagerOffset.Y)
+		local elementPosition = UDim2.fromOffset((self.Position.X + rotationOffset.X) * sizeScale.X + itemManagerOffset.X, (self.Position.Y + rotationOffset.Y) * sizeScale.Y + itemManagerOffset.Y)
 		if usePositionTween then
 			TweenService:Create(self.ItemElement, TweenInfo.new(0.25, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Position = elementPosition, Rotation = self.Rotation * 90}):Play()
 		else
@@ -407,7 +407,7 @@ function Item:_updateItemToItemManagerDimentions(applyPosition: boolean?, applyS
 	end
 	
 	if applySize then
-		local absoluteElementSize = selectedItemManager:GetAbsoluteSizeFromItemSize(self.Size)
+		local absoluteElementSize = selectedItemManager:GetAbsoluteSizeFromItemSize(self.Size, self.Rotation)
 		local elementSize = UDim2.fromOffset(absoluteElementSize.X, absoluteElementSize.Y)
 		if useSizeTween then
 			TweenService:Create(self.ItemElement, TweenInfo.new(0.25, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Size = elementSize}):Play()
@@ -418,7 +418,7 @@ function Item:_updateItemToItemManagerDimentions(applyPosition: boolean?, applyS
 end
 
 --[=[
-	Rotates the item.
+	Rotates the Item, has to be dragged to be rotatable.
 
 	@within Item
 ]=]

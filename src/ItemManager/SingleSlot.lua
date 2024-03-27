@@ -88,6 +88,21 @@ function SingleSlot:_createGuiElement(properties: Types.SingleSlotProperties): {
 end
 
 --[=[
+	Gets the AbsolutePosition property from the ItemManager's GUI element.
+
+	@tag ItemManager Override
+	@within SingleSlot
+]=]
+function SingleSlot:GetOffset(itemRotation: number): Vector2
+	local rotationOffset = Vector2.zero
+	if itemRotation % 2 == 1 then
+		rotationOffset = Vector2.new(self.GuiElement.AbsoluteSize.Y, self.GuiElement.AbsoluteSize.X) / 2 - self.GuiElement.AbsoluteSize / 2
+	end
+
+	return self.GuiElement.AbsolutePosition - rotationOffset
+end
+
+--[=[
 	Gets the AbsoluteSize of the slot.
 
 	@tag ItemManager Override
@@ -103,8 +118,27 @@ end
 	@tag ItemManager Override
 	@within SingleSlot
 ]=]
-function SingleSlot:GetAbsoluteSizeFromItemSize(itemSize: Vector2): Vector2
-	return self.GuiElement.AbsoluteSize
+function SingleSlot:GetAbsoluteSizeFromItemSize(itemSize: Vector2, itemRotation: number): Vector2
+	if itemRotation % 2 == 1 then
+		return Vector2.new(self.GuiElement.AbsoluteSize.Y, self.GuiElement.AbsoluteSize.X)
+	else
+		return self.GuiElement.AbsoluteSize
+	end
+end
+
+--[=[
+	Converts an AbsolutePosition to a ItemManager position.
+
+	@tag ItemManager Override
+	@within SingleSlot
+]=]
+function SingleSlot:GetItemManagerPositionFromAbsolutePosition(absolutePosition: Vector2, itemSize: Vector2, itemRotation: number): Vector2
+	local rotationOffset = Vector2.zero
+	if itemRotation % 2 == 1 then
+		rotationOffset = Vector2.new(itemSize.Y, itemSize.X) / 2 - itemSize / 2
+	end
+
+	return -rotationOffset
 end
 
 --[=[

@@ -42,10 +42,19 @@ function InventoryManager:Init()
 		Position = UDim2.new(1, -20, 0.5, 0),
 		Size = UDim2.fromScale(0.25, 0.5),
 	})
+
+	self.TestSingleSlot = GridPack.createSingleSlot({
+		Parent = Players.LocalPlayer.PlayerGui:WaitForChild("Test"),
+
+		AnchorPoint = Vector2.new(0.5, 1),
+		Position = UDim2.new(0.5, 0, 1, -20),
+		Size = UDim2.fromOffset(150, 100),
+	})
 	
 	self.StorageTransferLink = GridPack.createTransferLink({})
 	self.LocalInventory:ConnectTransferLink(self.StorageTransferLink)
 	self.StorageInventory:ConnectTransferLink(self.StorageTransferLink)
+	self.TestSingleSlot:ConnectTransferLink(self.StorageTransferLink)
 	
 	ReplicatedStorage.Remotes.StorageInventoryOpened.OnClientEvent:Connect(function(storageInventory)
 		self:ClearGridPackInventory(self.StorageInventory)
@@ -53,11 +62,13 @@ function InventoryManager:Init()
 		
 		self.StorageInventory:SetVisibility(true)
 		self.LocalInventory:SetVisibility(true)
+		self.TestSingleSlot:SetVisibility(true)
 	end)
 	
 	ReplicatedStorage.Remotes.StorageInventoryClosed.OnClientEvent:Connect(function()
 		self.StorageInventory:SetVisibility(false)
 		self.LocalInventory:SetVisibility(false)
+		self.TestSingleSlot:SetVisibility(false)
 		
 		self:ClearGridPackInventory(self.StorageInventory)
 	end)
@@ -65,6 +76,7 @@ function InventoryManager:Init()
 	UserInputService.InputBegan:Connect(function(input: InputObject, gameProcessedEvent: boolean)
 		if gameProcessedEvent == false then
 			if input.KeyCode == Enum.KeyCode.Tab then
+				self.TestSingleSlot:SetVisibility(not self.LocalInventory.Visible)
 				self.LocalInventory:SetVisibility(not self.LocalInventory.Visible)
 				self.StorageInventory:SetVisibility(false)
 			end
@@ -86,7 +98,7 @@ function InventoryManager:LoadInventory(gridPackItemManager, inventory)
 			Size = item.Size,
 			Rotation = item.Rotation,
 			
-			MoveMiddleware = function(movedItem, newGridPosition, newRotation, lastItemManager, newItemManager)
+			MoveMiddleware = nil,--[[function(movedItem, newGridPosition, newRotation, lastItemManager, newItemManager)
 				if newItemManager then
 					local result, newItemIndex = ReplicatedStorage.Remotes.MoveItemAcrossItemManager:InvokeServer(movedItem.Metadata.ItemIndex, lastItemManager.Metadata.TiedInstance, newItemManager.Metadata.TiedInstance, newGridPosition, newRotation)
 					movedItem.Metadata.ItemIndex = newItemIndex
@@ -94,7 +106,7 @@ function InventoryManager:LoadInventory(gridPackItemManager, inventory)
 				else
 					return ReplicatedStorage.Remotes.MoveItem:InvokeServer(movedItem.Metadata.ItemIndex, lastItemManager.Metadata.TiedInstance, newGridPosition, newRotation)
 				end
-			end,
+			end,]]
 			
 			Metadata = {
 				ItemIndex = itemIndex

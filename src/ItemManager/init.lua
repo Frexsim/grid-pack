@@ -128,7 +128,7 @@ end
 
 	@within ItemManager
 ]=]
-function ItemManager:GetOffset(): Vector2
+function ItemManager:GetOffset(itemRotation: number): Vector2
 	return self.GuiElement.AbsolutePosition
 end
 
@@ -146,7 +146,7 @@ end
 
 	@within ItemManager
 ]=]
-function ItemManager:GetAbsoluteSizeFromItemSize(itemSize: Vector2): Vector2
+function ItemManager:GetAbsoluteSizeFromItemSize(itemSize: Vector2, itemRotation: number): Vector2
 	return Vector2.zero
 end
 
