@@ -8,3 +8,7 @@ classes = ["ItemManager", "Grid", "SingleSlot"]
 [home]
 enabled = true
 includeReadme = false
+
+[docasaurus]
+url = "https://grid-pack.ifrex.xyz"
+baseUrl = "/"
