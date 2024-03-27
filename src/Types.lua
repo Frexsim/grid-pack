@@ -62,6 +62,7 @@ export type ItemManagerObject = {
 	TransferLinkConnected: Signal.Signal<TransferLinkObject>,
 	TransferLinkDisconnected: Signal.Signal<TransferLinkObject>,
 	
+	GetOffset: (itemRotation: number) -> Vector2,
 	GetSizeScale: () -> Vector2,
 	GetAbsoluteSizeFromItemSize: (itemSize: Vector2, itemRotation: number) -> Vector2,
 	GetItemManagerPositionFromAbsolutePosition: (absolutePosition: Vector2, itemSize: Vector2, itemRotation: number) -> Vector2,
