@@ -8,10 +8,11 @@ Here's and example of how client to server communication would work:
 local item = GridPack.createItem({
     -- Other Item properties
 
-    MoveMiddleware = function(movedItem, newGridPosition, lastItemManager, newItemManager)
+    MoveMiddleware = function(movedItem, newGridPosition, newRotation, lastItemManager, newItemManager)
         --[[
             movedItem: This Item
             newGridPosition: This Item's new position in a Grid. (Doesn't apply with SingleSlots)
+            newRotation: This Item's new rotation.
             lastItemManager: The ItemManager that the Item was in before it got moved.
             newItemManager: The new ItemManager the item was moved to. (If there is one)
         ]]
