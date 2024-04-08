@@ -9,7 +9,7 @@ This is done like:
 local transferGrid = GridPack.createGrid({
     Parent = screenGui,
 
-    Visible = true
+    Visible = true,
 
     GridSize = Vector2.new(8, 15),
     SlotAspectRatio = 1,
@@ -20,7 +20,7 @@ local transferGrid = GridPack.createGrid({
 })
 
 local transferLink = GridPack.createTransferLink({}) -- Create TransferLink
-grid:ConnectTransferLink(transferLink) -- Connect TransferLink to our first grid.
+myFirstGrid:ConnectTransferLink(transferLink) -- Connect TransferLink to our first grid.
 transferGrid:ConnectTransferLink(transferLink) -- Connect the TransferLink to our new grid.
 ```
 
