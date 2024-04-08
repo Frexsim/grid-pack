@@ -11,17 +11,17 @@ local GridPack = require(game:GetService("ReplicatedStorage").Packages.GridPack)
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "GridPack"
 screenGui.ResetOnSpawn = false
-screenGui.ZIndexBehaviour = Enum.ZIndexBehaviour.Sibling
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.Parent = game:GetService("Players").LocalPlayer.PlayerGui
 
 local myFirstGrid = GridPack.createGrid({
     Parent = screenGui, -- Parent of the grid container.
 
-    Visible = true -- If the grid is visible, changes the containers visible property. Also disables item interaction on all items inside. BY DEFAULT THIS IS SET TO FALSE to prevent the inventory being shown when first creating the Grid.
+    Visible = true, -- If the grid is visible, changes the containers visible property. Also disables item interaction on all items inside. BY DEFAULT THIS IS SET TO FALSE to prevent the inventory being shown when first creating the Grid.
 
     Assets = {
         Slot = nil -- Add your own CanvasGroup here to customize the slots in the grid.
-    }
+    },
 
     GridSize = Vector2.new(8, 15), -- How many slots the grid has on the X and Y axes.
     SlotAspectRatio = 1, -- Aspect ratio of one slot in the grid, helps with different resolutions if you're using scale instead of offset.
