@@ -51,7 +51,7 @@ Grid.__index = Grid
 	@within Grid
 ]=]
 --[=[
-	@prop ItemRemovec RBXScriptSignal
+	@prop ItemRemoved RBXScriptSignal
 	@readonly
 	@tag Signal
 	An event signal that fires every time an Item is removed from the Grid.
