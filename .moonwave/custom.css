@@ -17,11 +17,15 @@
     --ifm-navbar-search-input-icon: url('data:image/svg+xml;utf8,<svg fill="gray" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" height="16px" width="16px"><path d="M6.02945,10.20327a4.17382,4.17382,0,1,1,4.17382-4.17382A4.15609,4.15609,0,0,1,6.02945,10.20327Zm9.69195,4.2199L10.8989,9.59979A5.88021,5.88021,0,0,0,12.058,6.02856,6.00467,6.00467,0,1,0,9.59979,10.8989l4.82338,4.82338a.89729.89729,0,0,0,1.29912,0,.89749.89749,0,0,0-.00087-1.29909Z" /></svg>') !important;
 }
 
-.sourceButtonText_node_modules-docusaurus-plugin-moonwave-src-components-styles-module {
+label[class^="privateToggle_"], label[class*="privateToggle_"] {
+    outline: none !important;
+}
+
+div[class^="sourceButtonText_"], div[class*="sourceButtonText_"] {
     border: 0 !important;
 }
 
-.badge_node_modules-docusaurus-plugin-moonwave-src-components-styles-module {
+span[class^="badge_"], span[class*=" badge_"] {
     color: white !important;
     background-color: black;
 
@@ -35,26 +39,30 @@
 
     height: 28px;
 }
-.badge_node_modules-docusaurus-plugin-moonwave-src-components-styles-module[style="color: rgb(155, 89, 182);"] {
+span[class^="badge_"][style="color: rgb(155, 89, 182);"], span[class*="badge_"][style="color: rgb(155, 89, 182);"] {
     background-color: rgb(155, 89, 182);
 }
-.badge_node_modules-docusaurus-plugin-moonwave-src-components-styles-module[style="color: rgb(231, 76, 60);"] {
+span[class^="badge_"][style="color: rgb(231, 76, 60);"], span[class*="badge_"][style="color: rgb(231, 76, 60);"] {
     background-color: rgb(231, 76, 60);
 }
 
-.badgeToolTipTail_node_modules-docusaurus-plugin-moonwave-src-components-styles-module {
+span[class^="badgeToolTipTail_"], span[class*="badgeToolTipTail_"] {
     font-size: 0.8rem;
     
+    margin: 0 !important;
+
     padding-top: 5px;
     bottom: 3px;
+
+    position: relative;
 }
-.badgeToolTipTail_node_modules-docusaurus-plugin-moonwave-src-components-styles-module > svg {
+span[class^="badgeToolTipTail_"] > svg, span[class*="badgeToolTipTail_"] > svg {
     opacity: 0%;
     height: 0 !important;
     width: 0 !important;
 }
 
-.docTag_node_modules-docusaurus-plugin-moonwave-src-components-styles-module {
+span[class^="docTag_"], span[class*="docTag_"] {
     color: white !important;
     background-color: gray;
 
@@ -74,13 +82,16 @@
     line-height: 28px;
 
     bottom: 4px;
+
+    display: inline-block;
+    position: relative;
 }
-.docTag_node_modules-docusaurus-plugin-moonwave-src-components-styles-module::before {
+span[class^="docTag_"]::before, span[class*="docTag_"]::before {
     opacity: 0 !important;
     height: 0 !important;
     width: 0 !important;
 }
-.docTag_node_modules-docusaurus-plugin-moonwave-src-components-styles-module::after {
+span[class^="docTag_"]::after, span[class*="docTag_"]::after {
     opacity: 0 !important;
     height: 0 !important;
     width: 0 !important;
@@ -101,7 +112,7 @@
     padding-right: 0.35rem;
 }
 
-.green_node_modules-docusaurus-plugin-moonwave-src-components-styles-module {
+code[class^="green_"], code[class*="green_"] {
     color: var(--ifm-color-primary) !important;
 }
 
@@ -109,7 +120,7 @@
     padding: 0.5rem !important;
 }
 
-.memberString_node_modules-docusaurus-plugin-moonwave-src-components-styles-module {
+div[class^="memberString_"], div[class*="memberString_"] {
     background-color: var(--ifm-hover-overlay);
     border: 1px var(--docusaurus-collapse-button-bg-hover) solid;
     border-radius: 5px;
@@ -119,8 +130,15 @@
     padding-right: 10px;
 
     margin-bottom: 1rem !important;
+    margin-left: 10px;
 
     font-size: 1rem !important;
+}
+
+div[class^="memberString_"] > code, div[class*="memberString_"] > code {
+    background-color: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
 }
 
 .footer--dark {
@@ -174,7 +192,7 @@ details > pre {
     border: 1px var(--docusaurus-collapse-button-bg-hover) solid;
 }
 
-.docSidebarContainer_node_modules-docusaurus-plugin-moonwave-src-components-styles-module {
+div[class^="docSidebarContainer_"], div[class*="docSidebarContainer_"] {
     margin-right: 16px;
 }
 
