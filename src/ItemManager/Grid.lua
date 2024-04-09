@@ -224,7 +224,7 @@ function Grid:GetNextFreePositionForItem(item: Types.ItemObject): Vector2?
 		for gridX = 0, self.GridSize.X - 1 do
 			local currentPosition = Vector2.new(gridX, gridY)
 			local insideBounds = self:IsRegionInBounds(currentPosition, item.Size, item.Rotation)
-			local collidingItems = self:GetItemsInRegion(currentPosition, item.Size, { item })
+			local collidingItems = self:GetItemsInRegion(currentPosition, item.Size, item.Rotation, { item })
 			if #collidingItems == 0 and insideBounds then
 				return currentPosition
 			end
