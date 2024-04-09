@@ -30,7 +30,7 @@ local item = GridPack.createItem({
 
     Metadata = {
         -- Tip: Here you can any values you need for MoveMiddleware!
-    }
+    },
 
     -- Other Item properties
 })

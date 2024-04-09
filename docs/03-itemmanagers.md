@@ -20,7 +20,7 @@ local singleSlot = GridPack.createSingleSlot({
     Visible = true, -- If the slot is visible, changes the containers visible property. Also disables item interaction on the item inside.
 
     Assets = {
-        Slot = nil -- Add your own CanvasGroup here to customize the slot.
+        Slot = nil, -- Add your own CanvasGroup here to customize the slot.
     },
 
     AnchorPoint = Vector2.new(0, 0.5), -- Anchor point of the slot container
@@ -29,6 +29,6 @@ local singleSlot = GridPack.createSingleSlot({
 	
     Metadata = {
         -- Here you are free to store any values you want.
-    }
+    },
 })
 ```

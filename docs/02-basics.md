@@ -20,7 +20,7 @@ local myFirstGrid = GridPack.createGrid({
     Visible = true, -- If the grid is visible, changes the containers visible property. Also disables item interaction on all items inside. BY DEFAULT THIS IS SET TO FALSE to prevent the inventory being shown when first creating the Grid.
 
     Assets = {
-        Slot = nil -- Add your own CanvasGroup here to customize the slots in the grid.
+        Slot = nil, -- Add your own CanvasGroup here to customize the slots in the grid.
     },
 
     GridSize = Vector2.new(8, 15), -- How many slots the grid has on the X and Y axes.
@@ -32,7 +32,7 @@ local myFirstGrid = GridPack.createGrid({
 	
     Metadata = {
         -- Here you are free to store any values you want.
-    }
+    },
 })
 ```
 
