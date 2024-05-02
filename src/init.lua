@@ -1,4 +1,4 @@
---[[ GridPack, v0.1.0
+--[[ GridPack, v0.2.2
 
 GridPack is a library used to easily create grid-style inventories
 with an API abstraction and much customization.
