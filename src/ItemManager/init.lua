@@ -210,10 +210,10 @@ end
 	@within ItemManager
 ]=]
 function ItemManager:DisconnectTransferLink(transferLink: Types.TransferLinkObject)
-	transferLink:AddItemManager(self)
+	transferLink:RemoveItemManager(self)
 	
 	local transferLinkIndex = table.find(self.ConnectedTransferLinks, transferLink)
-	assert(transferLink, "Failed to disconnect TransferLink: Could not find a matching TransferLink that was connected")
+	assert(transferLinkIndex, "Failed to disconnect TransferLink: Could not find a matching TransferLink that was connected")
 	
 	table.remove(self.ConnectedTransferLinks, transferLinkIndex)
 	
