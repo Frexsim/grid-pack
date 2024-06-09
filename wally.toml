@@ -1,6 +1,6 @@
 [package]
 name = "frexsim/grid-pack"
-description = "An easy way to create grid-type inventories."
+description = "An easy way to create grid/tetris style inventories."
 version = "0.2.3"
 license = "MIT"
 registry = "https://github.com/UpliftGames/wally-index"
