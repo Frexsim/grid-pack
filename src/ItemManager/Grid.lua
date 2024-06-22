@@ -330,12 +330,20 @@ end
 	@within Grid
 ]=]
 function Grid:AddItem(item: Types.ItemObject, at: Vector2?, useTween: boolean?)
-	local itemPosition = at or item.Position
+	local nextFreePosition = self:GetNextFreePositionForItem(item)
+	if not nextFreePosition then
+		item:Rotate(1, true)
+		
+		nextFreePosition = self:GetNextFreePositionForItem(item)
+		if not nextFreePosition then
+			return false
+		end
+	end
 	assert(item.ItemManager == nil, "Could not add item: Item is already in another ItemManager")
-	assert(self:IsColliding(item, { item }, itemPosition) == false, "Could not add item: Item is colliding with an already added item")
-	assert(self:IsRegionInBounds(itemPosition, item.Size, item.Rotation) == true, "Could not add item: Item is out of the grid's bounds")
-	
-	item.Position = itemPosition
+	assert(self:IsColliding(item, { item }, nextFreePosition) == false, "Could not add item: Item is colliding with an already added item")
+	assert(self:IsRegionInBounds(nextFreePosition, item.Size, item.Rotation) == true, "Could not add item: Item is out of the grid's bounds")
+
+	item.Position = nextFreePosition
 	table.insert(self.Items, item)
 	self.ItemAdded:Fire(item)
 		
