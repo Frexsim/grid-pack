@@ -432,34 +432,38 @@ end
 
 --[=[
 	Rotates the Item, has to be dragged to be rotatable.
-
+						
 	@within Item
 ]=]
-function Item:Rotate(quartersOf360: number)
-	assert(self.IsDragging, "Must be dragging to rotate an item!")
-
-	self.PotentialRotation += quartersOf360
-	if self.PotentialRotation > 3 then
-		self.ItemElement.Rotation = -90
-		self.PotentialRotation -= 4
-	elseif self.PotentialRotation < 0 then
-		self.ItemElement.Rotation = 360
-		self.PotentialRotation += 4
-	end
-
-	if self._highlight then
-		local currentItemManager = self.HoveringItemManager or self.ItemManager
-		local gridPos = currentItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size, self.PotentialRotation)
-		self._highlight.Position = gridPos
-
-		if self.PotentialRotation % 2 == 1 then
-			self._highlight.Size = Vector2.new(self.Size.Y, self.Size.X)
-		else
-			self._highlight.Size = self.Size
+function Item:Rotate(quartersOf360: number, IsntDragging: boolean)
+	if IsntDragging then
+		self.PotentialRotation += quartersOf360
+		if self.PotentialRotation > 3 then
+			self.ItemElement.Rotation = -90
+			self.PotentialRotation -= 4
+		elseif self.PotentialRotation < 0 then
+			self.ItemElement.Rotation = 360
+			self.PotentialRotation += 4
 		end
-	end
+		
+		self.Rotation = self.PotentialRotation
+	else
+		assert(self.IsDragging, "Must be dragging to rotate an item!")
 
-	TweenService:Create(self.ItemElement, TweenInfo.new(0.25, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Rotation = self.PotentialRotation * 90}):Play()
+		if self._highlight then
+			local currentItemManager = self.HoveringItemManager or self.ItemManager
+			local gridPos = currentItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size, self.PotentialRotation)
+			self._highlight.Position = gridPos
+
+			if self.PotentialRotation % 2 == 1 then
+				self._highlight.Size = Vector2.new(self.Size.Y, self.Size.X)
+			else
+				self._highlight.Size = self.Size
+			end
+		end
+
+		TweenService:Create(self.ItemElement, TweenInfo.new(0.25, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Rotation = self.PotentialRotation * 90}):Play()
+	end
 end
 
 --[=[
