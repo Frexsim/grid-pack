@@ -183,7 +183,7 @@ end
 	@tag ItemManager Override
 	@within Grid
 ]=]
-function Grid:GetAbsoluteSizeFromItemSize(itemSize: Vector2, itemRotation: number): Vector2
+function Grid:GetAbsoluteSizeFromItemSize(itemSize: Vector2): Vector2
 	local sizeScale = self:GetSizeScale()
 	
 	return Vector2.new(math.round(sizeScale.X), math.round(sizeScale.Y)) * itemSize
