@@ -109,7 +109,7 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 	
 	self.Position = properties.Position or Vector2.zero
 	self.LastItemManagerParentAbsolutePosition = Vector2.zero
-	self.PositionChanged = Signal.new()
+	self.PositionChanged = self._trove:Add(Signal.new())
 	self.Size = properties.Size or Vector2.new(2, 2)
 	self.Rotation = properties.Rotation or 0
 	self.PotentialRotation = self.Rotation
@@ -117,9 +117,9 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 	self.ItemElement = self:_generateItemElement()
 	
 	self.ItemManager = nil
-	self.ItemManagerChanged = Signal.new()
+	self.ItemManagerChanged = self._trove:Add(Signal.new())
 	self.HoveringItemManager = nil
-	self.HoveringItemManagerChanged = Signal.new()
+	self.HoveringItemManagerChanged = self._trove:Add(Signal.new())
 	
 	self.MoveMiddleware = properties.MoveMiddleware
 	self.RenderMiddleware = properties.RenderMiddleware
