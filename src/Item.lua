@@ -99,8 +99,8 @@ Item.__index = Item
 function Item.new(properties: Types.ItemProperties): Types.ItemObject
 	local self = setmetatable({}, Item)
 	self._trove = Trove.new()
-	self._itemManagerTrove = self._trove:Add(Trove.new())
-	self._draggingTrove = self._trove:Add(Trove.new())
+	self._itemManagerTrove = self._trove:Extend()
+	self._draggingTrove = self._trove:Extend()
 	
 	self.Assets = properties.Assets or {}
 	if self.Assets.Item == nil then
