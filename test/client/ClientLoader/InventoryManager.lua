@@ -1,7 +1,6 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local StarterGui = game:GetService("StarterGui")
-local CollectionService = game:GetService("CollectionService")
 local UserInputService = game:GetService("UserInputService")
 
 local GridPack = require(ReplicatedStorage.Packages.GridPack)
