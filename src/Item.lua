@@ -90,6 +90,71 @@ Item.__index = Item
 
 	@within Item
 ]=]
+--[=[
+	@prop IsDraggable boolean
+	@readonly
+	If the item is draggable currently.
+
+	@within Item
+]=]
+--[=[
+	@prop IsDragging boolean
+	@readonly
+	If the item is being dragged currently.
+
+	@within Item
+]=]
+--[=[
+	@prop DragStarting RBXScriptSignal
+	@readonly
+	@tag Signal
+	An event signal that fires when a drag is starting, before the drag has been set up.
+
+	@within Item
+]=]
+--[=[
+	@prop DragStarted RBXScriptSignal
+	@readonly
+	@tag Signal
+	An event signal that fires when a drag has started, after the drag has been set up.
+
+	@within Item
+]=]
+--[=[
+	@prop DragEnding RBXScriptSignal
+	@readonly
+	@tag Signal
+	An event signal that fires when a drag is ending, before the drag has been completed.
+
+	@within Item
+]=]
+--[=[
+	@prop DragEnded RBXScriptSignal
+	@readonly
+	@tag Signal
+	An event signal that fires when a drag has ended, after the drag has been completed.
+
+	@within Item
+]=]
+--[=[
+	@prop MouseDraggingPivot Vector2
+	@readonly
+	The current position of the mouse local to the item element.
+
+	@within Item
+]=]
+--[=[
+	@prop RotateKeyCode Enum.KeyCode
+	The key used to rotate an item.
+
+	@within Item
+]=]
+--[=[
+	@prop Metadata { any }
+	Any data you would want to store.
+
+	@within Item
+]=]
 
 --[=[
 	Creates a new Item object.
