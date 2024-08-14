@@ -126,6 +126,10 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 	
 	self.IsDraggable = true
 	self.IsDragging = false
+	self.DragStarting = self._trove:Add(Signal.new())
+	self.DragStarted = self._trove:Add(Signal.new())
+	self.DragEnding = self._trove:Add(Signal.new())
+	self.DragEnded = self._trove:Add(Signal.new())
 	self.MouseDraggingPivot = Vector2.zero
 
 	self.RotateKeyCode = Enum.KeyCode.R
@@ -188,6 +192,9 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 	self._trove:Add(interactionButton.MouseButton1Down:Connect(function()
 		-- Check if item is in an ItemManager, if there is then start dragging
 		if self.ItemManager ~= nil and self.IsDraggable then
+			-- Fire drag starting signal
+			self.DragStarting:Fire(self.ItemElement)
+
 			self.IsDraggable = false
 			self.IsDragging = true
 			
@@ -219,6 +226,9 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 
 			-- Update positioning
 			self:_updateDraggingPosition()
+
+			-- Fire drag started signal
+			self.DragStarted:Fire(self.ItemElement)
 		end
 	end))
 	
@@ -251,6 +261,9 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 	self._trove:Add(UserInputService.InputEnded:Connect(function(input)
 		-- Drop item when left mouse stops getting clicked
 		if input.UserInputType == Enum.UserInputType.MouseButton1 and self.IsDragging == true and self.ItemManager ~= nil then
+			-- Fire drag ending signal
+			self.DragEnding:Fire(self.ItemElement)
+
 			self.IsDragging = false
 
 			-- Check if the item is colliding, if not add the item to the itemManager
@@ -297,6 +310,9 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 			self._draggingTrove:Clean()
 
 			self.IsDraggable = true
+
+			-- Fire drag ended signal
+			self.DragEnded:Fire(self.ItemElement)
 		end
 	end))
 
