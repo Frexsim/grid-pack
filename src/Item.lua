@@ -221,8 +221,8 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 		if self.ItemManager ~= nil then
 			self.ItemElement.Visible = self.ItemManager.Visible
 
-			local test = self.ItemManager.GuiElement.Parent.AbsolutePosition - self.LastItemManagerParentAbsolutePosition
-			self.ItemElement.Position = UDim2.fromOffset(self.ItemElement.Position.X.Offset - test.X, self.ItemElement.Position.Y.Offset - test.Y)
+			local parentPositionOffset = self.ItemManager.GuiElement.Parent.AbsolutePosition - self.LastItemManagerParentAbsolutePosition
+			self.ItemElement.Position = UDim2.fromOffset(self.ItemElement.Position.X.Offset - parentPositionOffset.X, self.ItemElement.Position.Y.Offset - parentPositionOffset.Y)
 			
 			self:_updateItemToItemManagerDimentions(true, true, useTween, useTween)
 
@@ -455,12 +455,9 @@ end
 ]=]
 function Item:_updateDraggingPosition()
 	local mousePosition = UserInputService:GetMouseLocation() - guiInset
-	local test = self.ItemManager.GuiElement.Parent.AbsolutePosition
-	if self.HoveringItemManager and self.ItemManager ~= self.HoveringItemManager then
-		--test = self.ItemManager.GuiElement.Parent.AbsolutePosition - self.HoveringItemManager.GuiElement.Parent.AbsolutePosition
-	end
+	local parentPosition = self.ItemManager.GuiElement.Parent.AbsolutePosition
 
-	self.ItemElement.Position = UDim2.fromOffset(mousePosition.X - self.MouseDraggingPivot.X * self.ItemElement.AbsoluteSize.X - test.X, mousePosition.Y - self.MouseDraggingPivot.Y * self.ItemElement.AbsoluteSize.Y - test.Y)
+	self.ItemElement.Position = UDim2.fromOffset(mousePosition.X - self.MouseDraggingPivot.X * self.ItemElement.AbsoluteSize.X - parentPosition.X, mousePosition.Y - self.MouseDraggingPivot.Y * self.ItemElement.AbsoluteSize.Y - parentPosition.Y)
 
 	local currentItemManager = self.HoveringItemManager or self.ItemManager
 	local gridPos = currentItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size, self.PotentialRotation)
