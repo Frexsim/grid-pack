@@ -39,6 +39,10 @@ export type ItemObject = {
 	Rotate: (quartersOf360: number) -> nil,
 	
 	Dragging: boolean,
+	DragStarting: Signal.Signal<GuiObject>,
+	DragStarted: Signal.Signal<GuiObject>,
+	DragEnding: Signal.Signal<GuiObject>,
+	DragEnded: Signal.Signal<GuiObject>,
 	MouseDraggingPivot: Vector2,
 	
 	Metadata: { any },
