@@ -16,14 +16,14 @@ function InventoryManager:Init()
 	local localInventory = ReplicatedStorage.Remotes.GetLocalInventory:InvokeServer()
 	
 	self.LocalInventory = GridPack.createGrid({
-		Parent = Players.LocalPlayer.PlayerGui:WaitForChild("Test"),
+		Parent = Players.LocalPlayer.PlayerGui:WaitForChild("Test").ScrollingFrame.CanvasGroup,
 
 		GridSize = Vector2.new(8, 15),
 		SlotAspectRatio = 1,
 
-		AnchorPoint = Vector2.new(0, 0.5),
-		Position = UDim2.new(0, 20, 0.5, 0),
-		Size = UDim2.fromScale(0.25, 0.5),
+		AnchorPoint = Vector2.new(0, 0),
+		Position = UDim2.new(0, 0, 0, 0),
+		Size = UDim2.fromScale(1, 1),
 		
 		Metadata = {
 			TiedInstance = localInventory.TiedInstance,
@@ -100,6 +100,15 @@ function InventoryManager:LoadInventory(gridPackItemManager, inventory)
 				ItemIndex = itemIndex
 			}
 		})
+
+		local oldParent = nil
+		newInteractiveItem.DragStarting:Connect(function(itemElement: GuiObject)
+			oldParent = itemElement.Parent
+			itemElement.Parent = Players.LocalPlayer.PlayerGui.Test
+		end)
+		newInteractiveItem.DragEnding:Connect(function(itemElement: GuiObject)
+			itemElement.Parent = oldParent
+		end)
 		
 		local success, errorMessage = pcall(function()
 			gridPackItemManager:AddItem(newInteractiveItem)
