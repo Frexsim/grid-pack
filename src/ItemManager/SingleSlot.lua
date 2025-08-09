@@ -186,4 +186,8 @@ function SingleSlot:RemoveItem()
 	self.ItemChanged:Fire(nil)
 end
 
+function SingleSlot:GetItemsInRegion()
+	return {self.Item}
+end
+
 return SingleSlot

@@ -101,60 +101,60 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 	self._trove = Trove.new()
 	self._itemManagerTrove = self._trove:Add(Trove.new())
 	self._draggingTrove = self._trove:Add(Trove.new())
-	
+
 	self.Assets = properties.Assets or {}
 	if self.Assets.Item == nil then
 		self.Assets.Item = self:_createDefaultItemAsset()
 	end
-	
+
 	self.Position = properties.Position or Vector2.zero
 	self.LastItemManagerParentAbsolutePosition = Vector2.zero
 	self.PositionChanged = Signal.new()
 	self.Size = properties.Size or Vector2.new(2, 2)
 	self.Rotation = properties.Rotation or 0
 	self.PotentialRotation = self.Rotation
-	
+
 	self.ItemElement = self:_generateItemElement()
-	
+
 	self.ItemManager = nil
 	self.ItemManagerChanged = Signal.new()
 	self.HoveringItemManager = nil
 	self.HoveringItemManagerChanged = Signal.new()
-	
+
 	self.MoveMiddleware = properties.MoveMiddleware
 	self.RenderMiddleware = properties.RenderMiddleware
-	
+
 	self.IsDraggable = true
 	self.IsDragging = false
 	self.MouseDraggingPivot = Vector2.zero
 
 	self.RotateKeyCode = Enum.KeyCode.R
-	
+
 	self.Metadata = properties.Metadata or {}
-	
+
 	-- Remove item from current ItemManager when item gets destroyed
 	self._trove:Add(function()
 		if self.ItemManager then
 			self.ItemManager:RemoveItem(self)
 		end
 	end)
-	
+
 	-- Apply sizing when the item's ItemManager changes
 	self._trove:Add(self.ItemManagerChanged:Connect(function(itemManager: Types.ItemManagerObject?, useTween: boolean?)
 		self._itemManagerTrove:Clean()
-		
+
 		if self.ItemManager then
 			self.LastItemManagerParentAbsolutePosition = self.ItemManager.GuiElement.Parent.AbsolutePosition
 		end
 
 		self.ItemManager = itemManager
-		
+
 		if self.ItemManager ~= nil then
 			self.ItemElement.Visible = self.ItemManager.Visible
 
 			local test = self.ItemManager.GuiElement.Parent.AbsolutePosition - self.LastItemManagerParentAbsolutePosition
 			self.ItemElement.Position = UDim2.fromOffset(self.ItemElement.Position.X.Offset - test.X, self.ItemElement.Position.Y.Offset - test.Y)
-			
+
 			self:_updateItemToItemManagerDimentions(true, true, useTween, useTween)
 
 			self._itemManagerTrove:Add(self.ItemManager.GuiElement:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
@@ -163,7 +163,7 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 			self._itemManagerTrove:Add(self.ItemManager.GuiElement:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
 				self:_updateItemToItemManagerDimentions(true, true, false, false)
 			end))
-			
+
 			self._itemManagerTrove:Add(self.ItemManager.VisibilityChanged:Connect(function(isVisible)
 				self.ItemElement.Visible = isVisible
 			end))
@@ -173,30 +173,30 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 			self.ItemElement.Parent = nil
 		end
 	end))
-	
+
 	-- Update the cursor pivot when the item gets resized
 	self._trove:Add(self.ItemElement:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
 		if self.IsDragging then
 			self:_updateDraggingPosition()
 		end
 	end))
-	
+
 	local interactionButton = self.ItemElement:FindFirstChild("InteractionButton")
 	assert(interactionButton, "Couldn't find a button named \"InteractionButton\" in the ItemElement")
-	
+
 	self._highlight = nil
 	self._trove:Add(interactionButton.MouseButton1Down:Connect(function()
 		-- Check if item is in an ItemManager, if there is then start dragging
 		if self.ItemManager ~= nil and self.IsDraggable then
 			self.IsDraggable = false
 			self.IsDragging = true
-			
+
 			-- Get mouse pivot to item
 			local mousePosition = UserInputService:GetMouseLocation() - guiInset
 			local itemStart = self.ItemElement.AbsolutePosition
 			local itemEnd = itemStart + self.ItemElement.AbsoluteSize
 			self.MouseDraggingPivot = (mousePosition - itemStart) / (itemEnd - itemStart)
-			
+
 			TweenService:Create(self.ItemElement, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {GroupTransparency = 0.5}):Play()
 			self.ItemElement.ZIndex += 1
 
@@ -207,7 +207,7 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 					end
 				end
 			end))
-			
+
 			-- Create drop highlight
 			local highlightSize = self.Size
 			if self.PotentialRotation % 2 == 1 then
@@ -221,7 +221,7 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 			self:_updateDraggingPosition()
 		end
 	end))
-	
+
 	self._trove:Add(UserInputService.InputChanged:Connect(function(input)
 		-- Update dragging when mouse moves
 		if input.UserInputType == Enum.UserInputType.MouseMovement and self.IsDragging == true and self.ItemManager ~= nil then
@@ -239,7 +239,7 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 					end
 				end
 			end
-			
+
 			-- Check collision in hovering ItemManager and apply highlight color
 			local currentItemManager = self.HoveringItemManager or self.ItemManager
 			if currentItemManager then
@@ -256,8 +256,8 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 			-- Check if the item is colliding, if not add the item to the itemManager
 			local currentItemManager = self.HoveringItemManager or self.ItemManager
 			local gridPos = currentItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size, self.PotentialRotation)
-			local isColliding = currentItemManager:IsColliding(self, { self }, gridPos, self.PotentialRotation)
-			if isColliding == false then
+			local colliding = currentItemManager:GetItemsInRegion(gridPos, self.Size, self.PotentialRotation, {self})
+			if #colliding <= 0 then
 				-- Get new ItemManager, is nil if no new ItemManager is found
 				local newItemManager = nil
 				if self.HoveringItemManager and self.HoveringItemManager ~= self.ItemManager then
@@ -281,6 +281,48 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 						self:SetItemManager(self.HoveringItemManager)
 					end
 				end
+			elseif #colliding == 1 then -- Replace
+
+				local newItemManager = nil
+				if self.HoveringItemManager and self.HoveringItemManager ~= self.ItemManager then
+					newItemManager = self.HoveringItemManager
+				end
+
+				local middlewareReturn = nil
+				if self.MoveMiddleware then
+					middlewareReturn = self.MoveMiddleware(self, gridPos, self.PotentialRotation, self.ItemManager, newItemManager)
+				end
+
+				if middlewareReturn == true or middlewareReturn == nil then
+					-- Save old state to allow full revert
+					local replaced = colliding[1]
+					local oldReplacedPos = replaced.Position
+					local oldReplacedRot = replaced.Rotation
+
+					local draggedOldPos = self.Position
+					local draggedOldRot = self.Rotation
+					local draggedOldManager = self.ItemManager
+
+					-- Remove replaced item place dragged item
+					currentItemManager:RemoveItem(replaced)
+
+					self.Position = gridPos
+					self.PositionChanged:Fire(gridPos)
+					self.Rotation = self.PotentialRotation
+
+					if newItemManager then
+						self:SetItemManager(newItemManager)
+					end
+
+					-- Try to place replaced item in dragged item's old position
+					local placed, placeErr = self:_replaceItem(replaced, draggedOldManager, draggedOldPos)
+
+					if not placed then
+						warn("Invalid drop location, reverting:", tostring(placeErr))
+						self:_revertSwap(replaced, oldReplacedPos, oldReplacedRot, draggedOldManager, draggedOldPos, draggedOldRot, currentItemManager)
+					end
+				end
+
 			end
 
 			self.PotentialRotation = self.Rotation
@@ -303,7 +345,7 @@ function Item.new(properties: Types.ItemProperties): Types.ItemObject
 	if self.RenderMiddleware then
 		self.RenderMiddleware(self.ItemElement)
 	end
-	
+
 	return self
 end
 
@@ -314,7 +356,7 @@ end
 	@within Item
 ]=]
 function Item:_createDefaultItemAsset(): CanvasGroup
-    local itemElement = Instance.new("CanvasGroup")
+	local itemElement = Instance.new("CanvasGroup")
 	itemElement.Name = "ItemElement"
 	itemElement.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 	itemElement.BorderSizePixel = 0
@@ -385,9 +427,13 @@ function Item:_updateDraggingPosition()
 	local gridPos = currentItemManager:GetItemManagerPositionFromAbsolutePosition(self.ItemElement.AbsolutePosition, self.Size, self.PotentialRotation)
 	self._highlight.Position = gridPos
 
-	local isColliding = currentItemManager:IsColliding(self, { self }, gridPos, self.PotentialRotation)
-	if isColliding == true then
+	local colliding = currentItemManager:GetItemsInRegion(gridPos, self.Size, self.PotentialRotation, {self})
+	if (colliding and #colliding > 1) then
 		self._highlight.Color = Color3.new(1, 0, 0)
+
+	elseif (colliding and #colliding == 1) then
+		self._highlight.Color = Color3.new(1, 1, 0)
+
 	else
 		self._highlight.Color = Color3.new(1, 1, 1)
 	end
@@ -401,7 +447,7 @@ end
 ]=]
 function Item:_updateItemToItemManagerDimentions(applyPosition: boolean?, applySize: boolean?, usePositionTween: boolean?, useSizeTween: boolean?, itemManager: Types.ItemManagerObject?)	
 	local selectedItemManager = itemManager or self.ItemManager
-	
+
 	if applyPosition then
 		local rotationOffset = Vector2.zero
 		if self.Rotation % 2 == 1 then
@@ -418,7 +464,7 @@ function Item:_updateItemToItemManagerDimentions(applyPosition: boolean?, applyS
 			self.ItemElement.Rotation = self.Rotation * 90
 		end
 	end
-	
+
 	if applySize then
 		local absoluteElementSize = selectedItemManager:GetAbsoluteSizeFromItemSize(self.Size, self.Rotation)
 		local elementSize = UDim2.fromOffset(absoluteElementSize.X, absoluteElementSize.Y)
@@ -475,7 +521,7 @@ function Item:SetItemManager(itemManager: Types.ItemManagerObject)
 	repeat
 		task.wait()
 	until self.ItemManager == nil
-	
+
 	if itemManager.Items then
 		itemManager:AddItem(self, nil, true)
 	else
@@ -490,6 +536,81 @@ end
 ]=]
 function Item:Destroy()
 	self._trove:Destroy()
+end
+
+
+function Item:_tryPlaceItem(item: Types.ItemObject, manager: Types.ItemManagerObject, atPosition: Vector2)
+	if manager.Items then
+		local success, err = pcall(function()
+			manager:AddItem(item, atPosition, true)
+		end)
+
+		return success, err
+
+	else
+
+		local success, err = pcall(function()
+			manager:ChangeItem(item)
+		end)
+
+		return success, err
+	end
+end
+
+function Item:_replaceItem(replacedItem: Types.ItemObject, oldManager: Types.ItemManagerObject, oldPos: Vector2)
+
+	-- Try exact position, then next free position
+	if oldManager.Items then
+		local success, err = self:_tryPlaceItem(replacedItem, oldManager, oldPos)
+		if success then return true end
+
+		local position = oldManager:GetNextFreePositionForItem(replacedItem)
+		if position then
+			local success2, err2 = self:_tryPlaceItem(replacedItem, oldManager, position)
+			if success2 then return true end
+			return false, err2 or err
+		end
+
+		return false, err
+
+	else -- SingleSlots:
+
+		-- Get a new grid position to avoid offsets when rotated
+		local gridPos = oldManager:GetItemManagerPositionFromAbsolutePosition(nil, replacedItem.Size, replacedItem.Rotation)
+		replacedItem.Position = gridPos
+
+		local success, err = self:_tryPlaceItem(replacedItem, oldManager, nil)
+		return success, err
+	end
+end
+
+function Item:_revertSwap(replacedItem, oldReplacedPos, oldReplacedRot, draggedOldManager, draggedOldPos, draggedOldRot, currentItemManager)
+
+	-- Revert dragged item
+	self.Rotation = draggedOldRot
+	self.PotentialRotation = draggedOldRot
+	self.Position = draggedOldPos
+	self.PositionChanged:Fire()
+
+	if draggedOldManager then
+		local success, err = pcall(function() self:SetItemManager(draggedOldManager) end)
+		if not success then
+			warn("Failed to SetItemManager for dragged item during revert:", tostring(err))
+		end
+	end
+
+	-- Revert replaced item
+	replacedItem.Rotation = oldReplacedRot
+	replacedItem.PotentialRotation = oldReplacedRot
+	replacedItem.Position = oldReplacedPos
+	replacedItem.PositionChanged:Fire()
+
+	if currentItemManager then
+		local success, err = pcall(function() replacedItem:SetItemManager(currentItemManager) end)
+		if not success then
+			warn("Failed to SetItemManager for replaced item during revert:", tostring(err)) 
+		end
+	end
 end
 
 return Item
